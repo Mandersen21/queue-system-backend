@@ -1,0 +1,23 @@
+{
+    "name": "queuing-backend-system",
+    "description": "",
+    "version": "1.0.0",
+    "author": {
+        "name": "Name",
+        "email": "Email"
+    },
+    "scripts": {},
+    "homepage": "",
+    "main": "",
+    "license": "MIT",
+    "bugs": "x",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "dependencies": {
+        "express": "^4.16.3",
+        "joi": "^13.4.0",
+        "mongoose": "^5.1.6"
+    }
+}
