@@ -29,6 +29,9 @@ function callName(req, res) {
     // Takes stdout data from script which executed
     // with arguments and send this data to res object
     process.stdout.on('data', function(data) {
+
+        console.log("Data from script: ", data.toString())
+
         res.send(data.toString());
     } )
 }
