@@ -23,9 +23,9 @@ router.get('/:id', (req, res) => {
 // Add new patient to the queue
 router.post('/', (req, res) => {
     const { error } = validatePatient(req.body);
-    if (error) return res.status(400).send(result.error);
+    if (error) return res.status(400).send(error);
 
-    const patent = {
+    const patient = {
         id: service.getUniqeID(),
         fullname: req.body.fullname,
         patientInitials: service.getPatientInitials(req.body.fullname),
@@ -33,22 +33,22 @@ router.post('/', (req, res) => {
         registredTime: new Date(),
         waitingTime: service.getWaitingTime(new Date())
     };
-    patients.push(patent);
+    patients.push(patient);
     res.send(patient);
 });
 
-// Update patient in queue
+// Update patient in queue TODO - Mads
 // router.put()
 
-// Remove patient from queue
+// Remove patient from queue TODO - Mads
 // router.delte()
 
 function validatePatient(patient) {
     const schema = {
-        fullname: Joi.string().required(),
+        fullname: Joi.string().min(3).required(),
         triage: Joi.number().required(),
     };
-    return Joi.validate(genre, schema);
+    return Joi.validate(patient, schema);
 }
 
 module.exports = router;
