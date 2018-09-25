@@ -8,6 +8,7 @@ The todo list for the backend:
 - Add post methods for specific routing. (push a new registred patient in the queue)
 - Add update methods for specific routing.
 - Add delete methods for specific routing.
+- Add mock data for testing
 - Add patient model if needed
 - Find out how time can be controlled in backend.
 -  
