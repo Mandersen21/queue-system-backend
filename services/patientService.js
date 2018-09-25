@@ -10,6 +10,23 @@ module.exports = {
         return (firstnameCharacter.charAt(0) + lastnameCharacter.charAt(0)).toUpperCase();
     },
 
+    getTriage: function (triageNumber) {
+        switch (triageNumber) {
+            case 1:
+                return triage.VERY_URGENT;
+            case 2:
+                return triage.URGENT;
+            case 3:
+                return triage.IMMEDIATE;
+            case 4:
+                return triage.STANDARD;
+            case 5:
+                return triage.NON_URGENT;
+            default:
+                return triage.NOT_ASSIGNED;
+        }
+    },
+
     getPatients: function () { // TODO - Add database and retreive from it to get a list of current patients in the queue
 
     },
@@ -94,6 +111,6 @@ const triage = {
     VERY_URGENT: 2,
     URGENT: 3,
     STANDARD: 4,
-    NON_URGENT: 5
+    NON_URGENT: 5,
+    NOT_ASSIGNED: 6,
 }
-
