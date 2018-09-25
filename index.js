@@ -1,12 +1,29 @@
-const express = require('express');
+const express = require('express');     // Express for running the app plus routes
+const config = require('config');       // Config for enable environment configs
+const helmet = require('helmet');       // Helmet for securing the app
+const morgan = require('morgan');       // Morgan for logging
+
+// Routes that can be called
+const patients = require('./routes/patients')
+
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.urlencoded( { extended: true } ));
+app.use(express.static('public'));
+app.use(helmet());
+app.use('/api/patients', patients);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('Listeling on port ' + port))
+app.listen(port, () => console.log('Listening on port ' + port))
 
-app.get('/name', callName);
+
+
+
+
+
+
+
 
 // function callName(req, res) {
      
