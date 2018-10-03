@@ -2,6 +2,7 @@ const express = require('express');     // Express for running the app plus rout
 const config = require('config');       // Config for enable environment configs
 const helmet = require('helmet');       // Helmet for securing the app
 const morgan = require('morgan');       // Morgan for logging
+const cors = require('cors')
 
 // Routes that can be called
 const patients = require('./routes/patients')
@@ -9,6 +10,7 @@ const patients = require('./routes/patients')
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded( { extended: true } ));
 app.use(express.static('public'));
