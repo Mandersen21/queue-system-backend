@@ -40,6 +40,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Anders Andersen',
+                age: 3,
                 patientInitials: this.getPatientInitials('Anders Andersen'),
                 triage: triage.STANDARD,
                 registredTime: new Date(),
@@ -48,6 +49,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Mikkel Andersen',
+                age: 37,
                 patientInitials: this.getPatientInitials('Mikkel Andersen'),
                 triage: triage.STANDARD,
                 registredTime: new Date(),
@@ -56,6 +58,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Mads Wehlast',
+                age: 37,
                 patientInitials: this.getPatientInitials('Anders Andersen'),
                 triage: triage.NON_URGENT,
                 registredTime: new Date(),
@@ -64,6 +67,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Patrick Rasmussen',
+                age: 2,
                 patientInitials: this.getPatientInitials('Patrick Rasmussen'),
                 triage: triage.NON_URGENT,
                 registredTime: new Date(),
@@ -72,6 +76,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Søren Spætte',
+                age: 37,
                 patientInitials: this.getPatientInitials('Søren Spætte'),
                 triage: triage.NON_URGENT,
                 registredTime: new Date(),
@@ -80,6 +85,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Lisbeth Thy',
+                age: 37,
                 patientInitials: this.getPatientInitials('Lisbeth Thy'),
                 triage: triage.NON_URGENT,
                 registredTime: new Date(),
@@ -88,6 +94,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Claus Kluder',
+                age: 37,
                 patientInitials: this.getPatientInitials('Claus Kluder'),
                 triage: triage.NON_URGENT,
                 registredTime: new Date(),
@@ -96,6 +103,7 @@ module.exports = {
             {
                 id: this.getUniqeID(),
                 fullname: 'Nicolaj Bjarkesen',
+                age: 37,
                 patientInitials: this.getPatientInitials('Nicolaj Bjarkesen'),
                 triage: triage.NON_URGENT,
                 registredTime: new Date(),
