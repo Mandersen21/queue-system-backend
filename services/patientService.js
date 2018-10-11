@@ -67,6 +67,39 @@ module.exports = {
             },
             {
                 id: this.getUniqeID(),
+                fullname: 'Nicy Sørensen',
+                age: 37,
+                patientInitials: this.getPatientInitials('Nicy Sørensen'),
+                triage: triage.STANDARD,
+                fastTrack: false,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('29'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'Søren Larsen',
+                age: 37,
+                patientInitials: this.getPatientInitials('Søren Larsen'),
+                triage: triage.STANDARD,
+                fastTrack: false,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('35'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'Peter Sch',
+                age: 37,
+                patientInitials: this.getPatientInitials('Peter Sch'),
+                triage: triage.STANDARD,
+                fastTrack: false,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('46'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
                 fullname: 'Mads Wehlast',
                 age: 37,
                 patientInitials: this.getPatientInitials('Anders Andersen'),
@@ -133,6 +166,50 @@ module.exports = {
             },
             {
                 id: this.getUniqeID(),
+                fullname: 'Cicolaj Kjarkesen',
+                age: 37,
+                patientInitials: this.getPatientInitials('Cicolaj Kjarkesen'),
+                triage: triage.NON_URGENT,
+                fastTrack: false,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('90'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'Jicolaj Vjarkesen',
+                age: 37,
+                patientInitials: this.getPatientInitials('Jicolaj Vjarkesen'),
+                triage: triage.NON_URGENT,
+                fastTrack: false,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('150'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'Wicolaj Vjarkesen',
+                age: 37,
+                patientInitials: this.getPatientInitials('Wicolaj Vjarkesen'),
+                triage: triage.NON_URGENT,
+                fastTrack: false,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('160'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'Sicolaj Kjarkesen',
+                age: 37,
+                patientInitials: this.getPatientInitials('Sicolaj Kjarkesen'),
+                triage: triage.NON_URGENT,
+                fastTrack: false,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('185'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
                 fullname: 'Jesper Sndersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Jesper Sndersen'),
@@ -184,6 +261,50 @@ module.exports = {
                 fastTrack: true,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('33'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'C Kndersen',
+                age: 37,
+                patientInitials: this.getPatientInitials('C Kndersen'),
+                triage: triage.STANDARD,
+                fastTrack: true,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('33'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'Q Rndersen',
+                age: 37,
+                patientInitials: this.getPatientInitials('Q Rndersen'),
+                triage: triage.STANDARD,
+                fastTrack: true,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('41'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'H Jndersen',
+                age: 37,
+                patientInitials: this.getPatientInitials('H Jndersen'),
+                triage: triage.STANDARD,
+                fastTrack: true,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('42'),
+                minutesToWait: null
+            },
+            {
+                id: this.getUniqeID(),
+                fullname: 'E Yndersen',
+                age: 37,
+                patientInitials: this.getPatientInitials('E Yndersen'),
+                triage: triage.STANDARD,
+                fastTrack: true,
+                registredTime: new Date(),
+                waitingTime: this.getWaitingTime('42'),
                 minutesToWait: null
             },
         ];
