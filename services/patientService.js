@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 module.exports = {
 
     getUniqeID: function () {
@@ -31,8 +33,8 @@ module.exports = {
 
     },
 
-    getWaitingTime: function () { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
-        return new Date()
+    getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
+        return moment().add(time, 'minute').toDate()
     },
 
     getMockPatients: function () {
@@ -45,7 +47,7 @@ module.exports = {
                 triage: triage.URGENT,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('25'),
             },
             {
                 id: this.getUniqeID(),
@@ -55,7 +57,7 @@ module.exports = {
                 triage: triage.STANDARD,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('29'),
             },
             {
                 id: this.getUniqeID(),
@@ -65,7 +67,7 @@ module.exports = {
                 triage: triage.NON_URGENT,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('35'),
             },
             {
                 id: this.getUniqeID(),
@@ -75,7 +77,7 @@ module.exports = {
                 triage: triage.NON_URGENT,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('42'),
             },
             {
                 id: this.getUniqeID(),
@@ -85,7 +87,7 @@ module.exports = {
                 triage: triage.NON_URGENT,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('55'),
             },
             {
                 id: this.getUniqeID(),
@@ -95,7 +97,7 @@ module.exports = {
                 triage: triage.NON_URGENT,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('75'),
             },
             {
                 id: this.getUniqeID(),
@@ -105,7 +107,7 @@ module.exports = {
                 triage: triage.NON_URGENT,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('77'),
             },
             {
                 id: this.getUniqeID(),
@@ -115,57 +117,57 @@ module.exports = {
                 triage: triage.NON_URGENT,
                 fastTrack: false,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('85'),
             },
             {
                 id: this.getUniqeID(),
-                fullname: 'Nicolaj Andersen',
+                fullname: 'Jesper Sndersen',
                 age: 37,
-                patientInitials: this.getPatientInitials('Nicolaj Bjarkesen'),
+                patientInitials: this.getPatientInitials('Jesper Sndersen'),
                 triage: triage.STANDARD,
                 fastTrack: true,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('105'),
             },
             {
                 id: this.getUniqeID(),
-                fullname: 'Nicolaj Andersen',
-                age: 37,
-                patientInitials: this.getPatientInitials('Nicolaj Bjarkesen'),
+                fullname: 'Nicolaj Nndersen',
+                age: 3,
+                patientInitials: this.getPatientInitials('Nicolaj Nndersen'),
                 triage: triage.STANDARD,
                 fastTrack: true,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('10'),
             },
             {
                 id: this.getUniqeID(),
-                fullname: 'Nicolaj Andersen',
-                age: 37,
-                patientInitials: this.getPatientInitials('Nicolaj Bjarkesen'),
+                fullname: 'Q Andersen',
+                age: 15,
+                patientInitials: this.getPatientInitials('Q Andersen'),
                 triage: triage.STANDARD,
                 fastTrack: true,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('17'),
             },
             {
                 id: this.getUniqeID(),
-                fullname: 'Nicolaj Andersen',
+                fullname: 'K Rndersen',
                 age: 37,
-                patientInitials: this.getPatientInitials('Nicolaj Bjarkesen'),
+                patientInitials: this.getPatientInitials('K Rndersen'),
                 triage: triage.STANDARD,
                 fastTrack: true,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('29'),
             },
             {
                 id: this.getUniqeID(),
-                fullname: 'Nicolaj Andersen',
+                fullname: 'T Andersen',
                 age: 37,
-                patientInitials: this.getPatientInitials('Nicolaj Bjarkesen'),
+                patientInitials: this.getPatientInitials('T Andersen'),
                 triage: triage.STANDARD,
                 fastTrack: true,
                 registredTime: new Date(),
-                waitingTime: this.getWaitingTime(new Date()),
+                waitingTime: this.getWaitingTime('33'),
             },
         ];
     }
