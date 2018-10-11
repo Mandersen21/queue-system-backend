@@ -37,8 +37,8 @@ module.exports = {
         return moment().add(time, 'minute').toDate()
     },
 
-    getWaitingTimeInMinutes: function (date1, date2) {
-        return (date1 - date2) / 60;
+    getWaitingTimeInMinutes: function (oldDate, newDate) {
+        return (newDate - oldDate) / 60000;
     },
 
     getMockPatients: function () {
@@ -52,7 +52,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('25'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -63,7 +63,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('29'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -74,7 +74,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('35'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -85,7 +85,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('42'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -96,7 +96,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('55'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -107,7 +107,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('75'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -118,7 +118,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('77'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -129,7 +129,7 @@ module.exports = {
                 fastTrack: false,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('85'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -140,7 +140,7 @@ module.exports = {
                 fastTrack: true,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('105'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -151,7 +151,7 @@ module.exports = {
                 fastTrack: true,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('10'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -162,7 +162,7 @@ module.exports = {
                 fastTrack: true,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('17'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -173,7 +173,7 @@ module.exports = {
                 fastTrack: true,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('29'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
             {
                 id: this.getUniqeID(),
@@ -184,7 +184,7 @@ module.exports = {
                 fastTrack: true,
                 registredTime: new Date(),
                 waitingTime: this.getWaitingTime('33'),
-                minutesToWait: this.getWaitingTimeInMinutes(this.registredTime, this.waitingTime)
+                minutesToWait: null
             },
         ];
     }

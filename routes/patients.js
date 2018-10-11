@@ -10,6 +10,11 @@ const patients = service.getMockPatients();
 
 // Get all patients
 router.get('/', (req, res) => {
+
+    // Add waiting times
+    patients.forEach(p => {
+        p.minutesToWait = service.getWaitingTimeInMinutes(p.registredTime, p.waitingTime)
+    })
     res.send(patients)
 });
 
