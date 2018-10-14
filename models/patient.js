@@ -41,7 +41,7 @@ const Patient = mongoose.model('Patient', new mongoose.Schema({
 
 function validatePatient(patient) {
     const schema = {
-        name: Joi.string().min(3).required(),
+        name: Joi.string().min(1).required(),
         age: Joi.number().required(),
         patientInitials: Joi.string().optional().allow('').min(1).max(3),
         triage: Joi.number().required(),

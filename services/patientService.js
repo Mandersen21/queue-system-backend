@@ -29,10 +29,6 @@ module.exports = {
         }
     },
 
-    getPatients: function () { // TODO - Add database and retreive from it to get a list of current patients in the queue
-
-    },
-
     getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
         return moment().add(time, 'minute').toDate()
     },
@@ -44,8 +40,8 @@ module.exports = {
     getMockPatients: function () {
         return [
             {
-                id: this.getUniqeID(),
-                fullname: 'Anders Andersen',
+                _id: this.getUniqeID(),
+                name: 'Anders Andersen',
                 age: 3,
                 patientInitials: this.getPatientInitials('Anders Andersen'),
                 triage: triage.URGENT,
@@ -55,8 +51,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Mikkel Andersen',
+                _id: this.getUniqeID(),
+                name: 'Mikkel Andersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Mikkel Andersen'),
                 triage: triage.STANDARD,
@@ -66,8 +62,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Nicy Sørensen',
+                _id: this.getUniqeID(),
+                name: 'Nicy Sørensen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Nicy Sørensen'),
                 triage: triage.STANDARD,
@@ -77,8 +73,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Søren Larsen',
+                _id: this.getUniqeID(),
+                name: 'Søren Larsen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Søren Larsen'),
                 triage: triage.STANDARD,
@@ -88,8 +84,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Peter Sch',
+                _id: this.getUniqeID(),
+                name: 'Peter Sch',
                 age: 37,
                 patientInitials: this.getPatientInitials('Peter Sch'),
                 triage: triage.STANDARD,
@@ -99,8 +95,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Mads Wehlast',
+                _id: this.getUniqeID(),
+                name: 'Mads Wehlast',
                 age: 37,
                 patientInitials: this.getPatientInitials('Anders Andersen'),
                 triage: triage.NON_URGENT,
@@ -110,8 +106,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Patrick Rasmussen',
+                _id: this.getUniqeID(),
+                name: 'Patrick Rasmussen',
                 age: 2,
                 patientInitials: this.getPatientInitials('Patrick Rasmussen'),
                 triage: triage.NON_URGENT,
@@ -121,8 +117,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Søren Spætte',
+                _id: this.getUniqeID(),
+                name: 'Søren Spætte',
                 age: 37,
                 patientInitials: this.getPatientInitials('Søren Spætte'),
                 triage: triage.NON_URGENT,
@@ -132,8 +128,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Lisbeth Thy',
+                _id: this.getUniqeID(),
+                name: 'Lisbeth Thy',
                 age: 37,
                 patientInitials: this.getPatientInitials('Lisbeth Thy'),
                 triage: triage.NON_URGENT,
@@ -143,8 +139,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Claus Kluder',
+                _id: this.getUniqeID(),
+                name: 'Claus Kluder',
                 age: 37,
                 patientInitials: this.getPatientInitials('Claus Kluder'),
                 triage: triage.NON_URGENT,
@@ -154,8 +150,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Nicolaj Bjarkesen',
+                _id: this.getUniqeID(),
+                name: 'Nicolaj Bjarkesen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Nicolaj Bjarkesen'),
                 triage: triage.NON_URGENT,
@@ -165,8 +161,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Cicolaj Kjarkesen',
+                _id: this.getUniqeID(),
+                name: 'Cicolaj Kjarkesen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Cicolaj Kjarkesen'),
                 triage: triage.NON_URGENT,
@@ -176,8 +172,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Jicolaj Vjarkesen',
+                _id: this.getUniqeID(),
+                name: 'Jicolaj Vjarkesen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Jicolaj Vjarkesen'),
                 triage: triage.NON_URGENT,
@@ -187,8 +183,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Wicolaj Vjarkesen',
+                _id: this.getUniqeID(),
+                name: 'Wicolaj Vjarkesen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Wicolaj Vjarkesen'),
                 triage: triage.NON_URGENT,
@@ -198,8 +194,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Sicolaj Kjarkesen',
+                _id: this.getUniqeID(),
+                name: 'Sicolaj Kjarkesen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Sicolaj Kjarkesen'),
                 triage: triage.NON_URGENT,
@@ -209,8 +205,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Jesper Sndersen',
+                _id: this.getUniqeID(),
+                name: 'Jesper Sndersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Jesper Sndersen'),
                 triage: triage.STANDARD,
@@ -220,8 +216,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Nicolaj Nndersen',
+                _id: this.getUniqeID(),
+                name: 'Nicolaj Nndersen',
                 age: 3,
                 patientInitials: this.getPatientInitials('Nicolaj Nndersen'),
                 triage: triage.STANDARD,
@@ -231,8 +227,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Q Andersen',
+                _id: this.getUniqeID(),
+                name: 'Q Andersen',
                 age: 15,
                 patientInitials: this.getPatientInitials('Q Andersen'),
                 triage: triage.STANDARD,
@@ -242,8 +238,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'K Rndersen',
+                _id: this.getUniqeID(),
+                name: 'K Rndersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('K Rndersen'),
                 triage: triage.STANDARD,
@@ -253,8 +249,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'T Andersen',
+                _id: this.getUniqeID(),
+                name: 'T Andersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('T Andersen'),
                 triage: triage.STANDARD,
@@ -264,8 +260,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'C Kndersen',
+                _id: this.getUniqeID(),
+                name: 'C Kndersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('C Kndersen'),
                 triage: triage.STANDARD,
@@ -275,8 +271,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'Q Rndersen',
+                _id: this.getUniqeID(),
+                name: 'Q Rndersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('Q Rndersen'),
                 triage: triage.STANDARD,
@@ -286,8 +282,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'H Jndersen',
+                _id: this.getUniqeID(),
+                name: 'H Jndersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('H Jndersen'),
                 triage: triage.STANDARD,
@@ -297,8 +293,8 @@ module.exports = {
                 minutesToWait: null
             },
             {
-                id: this.getUniqeID(),
-                fullname: 'E Yndersen',
+                _id: this.getUniqeID(),
+                name: 'E Yndersen',
                 age: 37,
                 patientInitials: this.getPatientInitials('E Yndersen'),
                 triage: triage.STANDARD,

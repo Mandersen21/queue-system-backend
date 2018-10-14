@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
 // Add new patient to the queue
 router.post('/', async (req, res) => {
     const { error } = validate(req.body);
-    if (error) return res.status(400).send(error);
+    if (error) return res.status(400).send(error.details[0].message);
 
     let patient = new Patient(
         {
@@ -41,14 +41,37 @@ router.post('/', async (req, res) => {
             minutesToWait: null
         });
 
-    patient = await Patient.save();
+    patient = await patient.save();
     res.send(patient);
 });
 
-// Update patient in queue TODO - Mads
-// router.put()
+// Update patient in queue
+router.put('/:id', async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-// Remove patient from queue TODO - Mads
-// router.delte()
+    const patient = await Patient.findByIdAndUpdate(req.params.id,
+        {
+            name: req.body.name,
+            age: req.body.age,
+            patientInitials: service.getPatientInitials(req.body.name),
+            triage: req.body.triage,
+            fastTrack: req.body.fastTrack,
+            registredTime: new Date,
+            waitingTime: service.getWaitingTime('25'),
+            minutesToWait: null
+        });
+
+    if (!patient) return res.status(404).send('The patient with the given ID was not found.');
+    res.send(patient);
+});
+
+// Remove patient from queue
+router.delete('/:id', async (req, res) => {
+    const patient = await Patient.findByIdAndRemove(req.params.id);
+
+    if (!patient) return res.status(404).send('The patient with the given ID was not found.');
+    res.send(patient);
+});
 
 module.exports = router;
