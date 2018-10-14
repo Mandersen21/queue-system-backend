@@ -1,17 +1,16 @@
-const express = require('express');     // Express
-const Joi = require('joi');             // Joi for validating models 
-const moment = require('moment');       // Moment for calculating waiting times
-
-// Service
+const { Genre, validate } = require('../models/genre')
+const express = require('express');
 const service = require('../services/patientService');
-
 const router = express.Router();
-const patients = service.getMockPatients();
+
+// Mock data
+// const patients = service.getMockPatients();
 
 // Get all patients
 router.get('/', (req, res) => {
+    const patients = await Patient.find();
 
-    // Add waiting times
+    // Add waiting time
     patients.forEach(p => {
         p.minutesToWait = service.getWaitingTimeInMinutes(p.registredTime, p.waitingTime)
     })
@@ -20,25 +19,29 @@ router.get('/', (req, res) => {
 
 // Get specific patient, based on id
 router.get('/:id', (req, res) => {
-    const patient = patients.find(p => p.id === parseInt(req.params.id));
+    const patient = await Patient.findById(req.params.id);
     if (!patient) return res.status(404).send('Patient was not found')
     res.send(patient)
 })
 
 // Add new patient to the queue
 router.post('/', (req, res) => {
-    const { error } = validatePatient(req.body);
+    const { error } = validate(req.body);
     if (error) return res.status(400).send(error);
 
-    const patient = {
-        id: service.getUniqeID(),
-        fullname: req.body.fullname,
-        patientInitials: service.getPatientInitials(req.body.fullname),
-        triage: service.getTriage(req.body.triage),
-        registredTime: new Date(),
-        waitingTime: service.getWaitingTime(new Date())
-    };
-    patients.push(patient);
+    let patient = new Patient(
+        {
+            name: req.body.name,
+            age: req.body.age,
+            patientInitials: req.body.patientInitials,
+            triage: req.body.triage,
+            fastTrack: req.body.fastTrack,
+            registredTime: new Date,
+            waitingTime: service.getWaitingTime('25'),
+            minutesToWait: null
+        });
+
+    patient = await patient.save();
     res.send(patient);
 });
 
@@ -47,13 +50,5 @@ router.post('/', (req, res) => {
 
 // Remove patient from queue TODO - Mads
 // router.delte()
-
-function validatePatient(patient) {
-    const schema = {
-        fullname: Joi.string().min(3).required(),
-        triage: Joi.number().required(),
-    };
-    return Joi.validate(patient, schema);
-}
 
 module.exports = router;
