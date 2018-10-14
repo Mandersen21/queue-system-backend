@@ -1,4 +1,4 @@
-const { Genre, validate } = require('../models/genre')
+const { Patient, validate } = require('../models/patient')
 const express = require('express');
 const service = require('../services/patientService');
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 // const patients = service.getMockPatients();
 
 // Get all patients
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     const patients = await Patient.find();
 
     // Add waiting time
@@ -18,14 +18,14 @@ router.get('/', (req, res) => {
 });
 
 // Get specific patient, based on id
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
     const patient = await Patient.findById(req.params.id);
     if (!patient) return res.status(404).send('Patient was not found')
     res.send(patient)
 })
 
 // Add new patient to the queue
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error);
 
@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
         {
             name: req.body.name,
             age: req.body.age,
-            patientInitials: req.body.patientInitials,
+            patientInitials: service.getPatientInitials(req.body.name),
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,
             registredTime: new Date,
@@ -41,7 +41,7 @@ router.post('/', (req, res) => {
             minutesToWait: null
         });
 
-    patient = await patient.save();
+    patient = await Patient.save();
     res.send(patient);
 });
 
