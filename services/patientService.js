@@ -30,20 +30,20 @@ module.exports = {
     },
 
     createPatientId: function(triage, number, patientInitials) {
-        let triageLetter;
-        let queueNumber = number;
+        let triageLetter = "";
+        let queueNumber = number.toString();
 
         // Get triage letters
-        if (triage === 1) { triageLetter = "R" }
-        if (triage === 2) { triageLetter = "O" }
-        if (triage === 3) { triageLetter = "Y" }
-        if (triage === 4) { triageLetter = "G" }
-        if (triage === 5) { triageLetter = "B" }
+        if (triage === "1") { triageLetter = "R" }
+        if (triage === "2") { triageLetter = "O" }
+        if (triage === "3") { triageLetter = "Y" }
+        if (triage === "4") { triageLetter = "G" }
+        if (triage === "5") { triageLetter = "B" }
 
         // Check queue number
-        if (number < 10) { queueNumber + "0" }
+        if (parseInt(number) < 10) { queueNumber = queueNumber + "0" }
         console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created" )
-        return patientInitials + triageLetter + queueNumber.toString();
+        return patientInitials + triageLetter + queueNumber;
     },
 
     getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
