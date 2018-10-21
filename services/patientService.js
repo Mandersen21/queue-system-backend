@@ -41,7 +41,7 @@ module.exports = {
         if (triage === "5") { triageLetter = "B" }
 
         // Check queue number
-        if (parseInt(number) < 10) { queueNumber = queueNumber + "0" }
+        if (parseInt(number) < 10) { queueNumber = "0" + queueNumber }
         console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created" )
         return patientInitials + triageLetter + queueNumber;
     },
