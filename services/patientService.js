@@ -42,7 +42,8 @@ module.exports = {
 
         // Check queue number
         if (number < 10) { queueNumber + "0" }
-        return patientInitials + triageLetter + queueNumber;
+        console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created" )
+        return patientInitials + triageLetter + queueNumber.toString();
     },
 
     getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
