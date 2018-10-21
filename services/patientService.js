@@ -42,7 +42,7 @@ module.exports = {
 
         // Check queue number
         if (number < 10) { queueNumber + "0" }
-        return patientInitials + triageLetter + number;
+        return patientInitials + triageLetter + queueNumber;
     },
 
     getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
