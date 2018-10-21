@@ -3,6 +3,8 @@ const express = require('express');
 const service = require('../services/patientService');
 const router = express.Router();
 
+let patientQueueNumber = 0;
+
 // Mock data
 // const patients = service.getMockPatients();
 
@@ -29,10 +31,13 @@ router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    this.patientQueueNumber++
+
     let patient = new Patient(
         {
             name: req.body.name,
             age: req.body.age,
+            patientId: service.createPatientId(req.body.triage, this.patientQueueNumber, service.getPatientInitials(req.body.name)),
             patientInitials: service.getPatientInitials(req.body.name),
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,

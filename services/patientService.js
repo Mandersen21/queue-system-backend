@@ -29,6 +29,22 @@ module.exports = {
         }
     },
 
+    createPatientId: function(triage, number, patientInitials) {
+        let triageLetter;
+        let queueNumber = number;
+
+        // Get triage letters
+        if (triage === 1) { triageLetter = "R" }
+        if (triage === 2) { triageLetter = "O" }
+        if (triage === 3) { triageLetter = "Y" }
+        if (triage === 4) { triageLetter = "G" }
+        if (triage === 5) { triageLetter = "B" }
+
+        // Check queue number
+        if (number < 10) { queueNumber + "0" }
+        return patientInitials + triageLetter + number;
+    },
+
     getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
         return moment().add(time, 'minute').toDate()
     },

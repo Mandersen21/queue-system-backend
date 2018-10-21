@@ -10,6 +10,10 @@ const Patient = mongoose.model('Patient', new mongoose.Schema({
         type: Number, 
         required: true 
     },
+    patientId: {
+        type: String,
+        required: true
+    },
     patientInitials: { 
         type: String, 
         required: false 
