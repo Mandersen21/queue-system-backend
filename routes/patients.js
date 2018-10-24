@@ -1,7 +1,16 @@
 const { Patient, validate } = require('../models/patient')
 const express = require('express');
 const service = require('../services/patientService');
+const Pusher = require("pusher");
 const router = express.Router();
+
+const pusher = new Pusher({
+    appId: `${process.env.PUSHER_APP_ID}`,
+    key: `${process.env.PUSHER_API_KEY}`,
+    secret: `${process.env.PUSHER_API_SECRET}`,
+    cluster: `${process.env.PUSHER_APP_CLUSTER}`,
+    encrypted: true
+});
 
 var patientQueueNumber = 0;
 
@@ -49,6 +58,10 @@ router.post('/', async (req, res) => {
 
     patient = await patient.save();
     res.send(patient);
+    
+    // Trigger event to clients
+    pusher.trigger("events-channel", "new-update", {        
+    });
 });
 
 // Update patient in queue
