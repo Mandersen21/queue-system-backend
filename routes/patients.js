@@ -16,8 +16,7 @@ var patientQueueNumber = 0;
 
 // Get all patients
 router.get('/', async (req, res) => {    
-    const patients = await Patient.find();
-
+    const patients = await Patient.find().sort({ triage: 1, minutesToWait: 1 });
     // Add waiting time
     patients.forEach(p => {
         p.minutesToWait = service.getWaitingTimeInMinutes(p.registredTime, p.waitingTime)
