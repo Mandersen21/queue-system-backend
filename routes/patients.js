@@ -15,9 +15,7 @@ const pusher = new Pusher({
 var patientQueueNumber = 0;
 
 // Get all patients
-router.get('/', async (req, res) => {
-    console.log("Getting patient data")
-    
+router.get('/', async (req, res) => {    
     const patients = await Patient.find();
 
     // Add waiting time
@@ -82,6 +80,10 @@ router.put('/:id', async (req, res) => {
 
     if (!patient) return res.status(404).send('The patient with the given ID was not found.');
     res.send(patient);
+
+    // Trigger event to clients
+    pusher.trigger("events-channel", "new-update", {        
+    });
 });
 
 // Remove patient from queue
@@ -90,6 +92,10 @@ router.delete('/:id', async (req, res) => {
 
     if (!patient) return res.status(404).send('The patient with the given ID was not found.');
     res.send(patient);
+
+    // Trigger event to clients
+    pusher.trigger("events-channel", "new-update", {        
+    });
 });
 
 module.exports = router;
