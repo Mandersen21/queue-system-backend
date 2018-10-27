@@ -14,11 +14,10 @@ const pusher = new Pusher({
 
 var patientQueueNumber = 0;
 
-// Mock data
-// const patients = service.getMockPatients();
-
 // Get all patients
 router.get('/', async (req, res) => {
+    console.log("Getting patient data")
+    
     const patients = await Patient.find();
 
     // Add waiting time
