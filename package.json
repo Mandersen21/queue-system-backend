@@ -6,7 +6,12 @@
         "name": "Name",
         "email": "Email"
     },
-    "scripts": {},
+    "scripts": {
+        "start": "node server.js"
+    },
+    "engines": {
+        "node": "8.11.4"
+    },
     "homepage": "",
     "main": "",
     "license": "MIT",
