@@ -15,11 +15,13 @@ const pusher = new Pusher({
 var patientQueueNumber = 0;
 
 // Get all patients
-router.get('/', async (req, res) => {    
+router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ triage: 1, minutesToWait: 1 });
     // Add waiting time
     patients.forEach(p => {
-        p.minutesToWait = service.getWaitingTimeInMinutes(p.registredTime, p.waitingTime)
+        if (p.expectedTreatmentTime) {
+            p.minutesToWait = service.getWaitingTimeInMinutes(p.expectedTreatmentTime)
+        }
     })
     res.send(patients)
 });
@@ -47,16 +49,17 @@ router.post('/', async (req, res) => {
             patientInitials: service.getPatientInitials(req.body.name),
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,
-            registredTime: new Date,
+            registredTime: new Date(),
+            expectedTreatmentTime: service.getExpectedTreatmentTime(),
             waitingTime: service.getWaitingTime('25'),
             minutesToWait: null
         });
 
     patient = await patient.save();
     res.send(patient);
-    
+
     // Trigger event to clients
-    pusher.trigger("events-channel", "new-update", {        
+    pusher.trigger("events-channel", "new-update", {
     });
 });
 
@@ -81,7 +84,7 @@ router.put('/:id', async (req, res) => {
     res.send(patient);
 
     // Trigger event to clients
-    pusher.trigger("events-channel", "new-update", {        
+    pusher.trigger("events-channel", "new-update", {
     });
 });
 
@@ -93,7 +96,7 @@ router.delete('/:id', async (req, res) => {
     res.send(patient);
 
     // Trigger event to clients
-    pusher.trigger("events-channel", "new-update", {        
+    pusher.trigger("events-channel", "new-update", {
     });
 });
 

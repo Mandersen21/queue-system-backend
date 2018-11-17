@@ -27,10 +27,14 @@ const Patient = mongoose.model('Patient', new mongoose.Schema({
         required: true, 
         default: false 
     },
-    registredTime: { 
+    registredTime: {
         type: Date, 
         required: false, 
-        default: new Date() 
+        default: new Date()
+    },
+    expectedTreatmentTime: {
+        type: Date,
+        required: true,
     },
     waitingTime: { 
         type: Date, 

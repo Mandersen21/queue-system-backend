@@ -46,12 +46,16 @@ module.exports = {
         return patientInitials + triageLetter + queueNumber;
     },
 
+    getExpectedTreatmentTime: function () {
+        return moment().add(35, 'minute').toDate()
+    },
+
     getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
         return moment().add(time, 'minute').toDate()
     },
 
-    getWaitingTimeInMinutes: function (oldDate, newDate) {
-        return (newDate - oldDate) / 60000;
+    getWaitingTimeInMinutes: function (expectedTreatmentTime) {
+        return (expectedTreatmentTime - new Date()) / 60000;
     },
 
     getMockPatients: function () {
