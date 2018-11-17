@@ -1,3 +1,4 @@
 {
-    "name": "Queueing system"
+    "name": "Queueing system",
+    "db": "mongodb://localhost/waitingtimes"
 }
