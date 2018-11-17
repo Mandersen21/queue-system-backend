@@ -1,4 +1,4 @@
 {
     "name": "Queueing system",
-    "db": "mongodb://wehlast:Mm1234567!@ds024748.mlab.com:24748/ventetider"
+    "db": "ventetider_db"
 }
