@@ -1,3 +1,7 @@
 {
-    "db": "ventetider_db"
+    "db": "ventetider_db",
+    "pusher_app_id": "pusher_id",
+    "pusher_api_key": "pusher_key",
+    "pusher_api_secret": "pusher_secret",
+    "pusher_app_cluster": "pusher_cluster"
 }

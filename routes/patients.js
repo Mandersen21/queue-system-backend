@@ -3,12 +3,13 @@ const express = require('express');
 const service = require('../services/patientService');
 const Pusher = require("pusher");
 const router = express.Router();
+const config = require('config');
 
 const pusher = new Pusher({
-    appId: `${process.env.PUSHER_APP_ID}`,
-    key: `${process.env.PUSHER_API_KEY}`,
-    secret: `${process.env.PUSHER_API_SECRET}`,
-    cluster: `${process.env.PUSHER_APP_CLUSTER}`,
+    appId: config.get('pusher_app_id'),
+    key: config.get('pusher_api_key'),
+    secret: config.get('pusher_api_secret'),
+    cluster: config.get('pusher_app_cluster'),
     encrypted: true
 });
 
