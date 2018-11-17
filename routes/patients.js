@@ -1,4 +1,4 @@
-const { Patient, validate } = require('../models/patient')
+const { Patient, validate } = require('../models/patient');
 const express = require('express');
 const service = require('../services/patientService');
 const Pusher = require("pusher");
@@ -13,6 +13,7 @@ const pusher = new Pusher({
 });
 
 var patientQueueNumber = 0;
+
 
 // Get all patients
 router.get('/', async (req, res) => {
@@ -31,7 +32,7 @@ router.get('/:id', async (req, res) => {
     const patient = await Patient.findById(req.params.id);
     if (!patient) return res.status(404).send('Patient was not found')
     res.send(patient)
-})
+});
 
 // Add new patient to the queue
 router.post('/', async (req, res) => {
