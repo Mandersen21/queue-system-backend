@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
+const config = require('config');
 
-module.exports = function (app) {
-    // ------------------------------
-    // Set up DB connection
-    // ------------------------------
-    mongoose.connect('mongodb://localhost/waitingtimes')
-        .then(() => console.log("Connected to waitingtimes database"))
-}
+module.exports = function() {
+    const db = config.get('db');
+    mongoose.connect(db)
+      .then(() => winston.info(`Connected to ${db}...`));
+  }

@@ -14,7 +14,6 @@ const pusher = new Pusher({
 
 var patientQueueNumber = 0;
 
-
 // Get all patients
 router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ triage: 1, minutesToWait: 1 });
