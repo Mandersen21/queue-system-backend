@@ -13,7 +13,7 @@ module.exports = function (app) {
 
     winston.add(winston.transports.File, {filename: 'logfile.log'});
     winston.add(winston.transports.MongoDB, {
-        db:'mongodb://localhost/waitingtimes'
+        db:'mongodb://localhost/waitingtimes',
         level: 'info'
     });
     
