@@ -102,8 +102,8 @@ router.delete('/:id', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const patient = await Patient.findByIdAndDelete({ patientId: req.params.id});
-    
+    const patient = await Patient.findByIdAndDelete({ patientId: req.params.id });
+
     if (!patient) return res.status(404).send('The patient with the given ID was not found.');
     res.send(patient);
 
@@ -120,18 +120,24 @@ router.get('/options', async (req, res) => {
     res.send(options);
 });
 
-router.post('/options', async (req, res) => {
+router.put('/options', async (req, res) => {
     const { error } = validateOption(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    let option = new Option(
+    const option = await Option.findOneAndUpdate({},
         {
             acutePatients: req.body.acutePatients,
         });
 
-    option = await option.save();
-    res.send(option);
-
+    if (!option) {
+        let opt = new Option({ acutePatients: req.body.acutePatients });
+        patient = await patient.save();
+        return res.send(opt);;
+    }
+    else {
+        res.send(option);
+    }
+    
     // Trigger event to clients
     pusher.trigger("events-channel", "new-option", {
     });
