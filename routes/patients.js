@@ -1,5 +1,4 @@
 const { Patient, validate } = require('../models/patient');
-const { Option, validateOption } = require('../models/options');
 const express = require('express');
 const service = require('../services/patientService');
 const Pusher = require("pusher");
@@ -99,11 +98,7 @@ router.put('/:id', async (req, res) => {
 
 // Remove patient from queue
 router.delete('/:id', async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    const patient = await Patient.findByIdAndDelete({ patientId: req.params.id });
-
+    const patient = await Patient.findOneAndDelete({ patientId: req.params.id });
     if (!patient) return res.status(404).send('The patient with the given ID was not found.');
     res.send(patient);
 
