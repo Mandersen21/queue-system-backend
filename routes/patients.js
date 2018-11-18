@@ -29,9 +29,9 @@ router.get('/', async (req, res) => {
 
 // Get specific patient, based on id
 router.get('/:id', async (req, res) => {
-    const patient = await Patient.findById(req.params.id);
+    const patient = await Patient.findOne({ patientId: req.params.id});
     if (!patient) return res.status(404).send('Patient was not found')
-    res.send(patient)
+    res.send(patiecsnt)
 });
 
 // Add new patient to the queue
@@ -42,11 +42,10 @@ router.post('/', async (req, res) => {
     const patientIds = await Patient.find({ triage: req.body.triage })
     let numberArray = []
     patientIds.forEach(element => {
-        let n = element.slice(-2);
+        let n = element.patientId.slice(-2);
         numberArray.push(Number(n))
     });
     patientQueueNumber = Math.max(numberArray)
-
     patientQueueNumber = parseInt(patientQueueNumber) + 1
     if (patientQueueNumber === 100) { patientQueueNumber = 1 }
 
