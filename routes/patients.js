@@ -109,6 +109,14 @@ router.delete('/:id', async (req, res) => {
     });
 });
 
+router.get('/options', async (req, res) => {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    const options = await Option.find()
+    res.send(options);
+});
+
 router.post('/options', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
