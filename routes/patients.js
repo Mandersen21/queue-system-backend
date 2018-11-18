@@ -113,7 +113,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 router.get('/options', async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateOption(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     const options = await Option.find()
@@ -121,7 +121,7 @@ router.get('/options', async (req, res) => {
 });
 
 router.post('/options', async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateOption(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     let option = new Option(
