@@ -32,12 +32,12 @@ router.put('/', async (req, res) => {
         });
 
     if (!option) {
-        let opt = new Option({ acutePatients: req.body.acutePatients });
+        let opt = new Option({ acutePatients: 0 });
         opt = await opt.save();
         res.send(opt);
     }
     else {
-        res.send("options changed");
+        res.send(option);
     }
     
     // Trigger event to clients

@@ -112,35 +112,4 @@ router.delete('/:id', async (req, res) => {
     });
 });
 
-router.get('/options', async (req, res) => {
-    const { error } = validateOption(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    const options = await Option.find()
-    res.send(options);
-});
-
-router.put('/options', async (req, res) => {
-    const { error } = validateOption(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    const option = await Option.findOneAndUpdate({},
-        {
-            acutePatients: req.body.acutePatients,
-        });
-
-    if (!option) {
-        let opt = new Option({ acutePatients: req.body.acutePatients });
-        patient = await patient.save();
-        return res.send(opt);;
-    }
-    else {
-        res.send(option);
-    }
-    
-    // Trigger event to clients
-    pusher.trigger("events-channel", "new-option", {
-    });
-});
-
 module.exports = router;
