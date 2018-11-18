@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
         let n = element.slice(-2);
         numberArray.push(Number(n))
     });
-    patientQueueNumber = Math.max(numberArray)
+    patientQueueNumber = Math.max(...numberArray)
 
     patientQueueNumber = parseInt(patientQueueNumber) + 1
     if (patientQueueNumber === 100) { patientQueueNumber = 1 }
