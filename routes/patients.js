@@ -3,12 +3,13 @@ const express = require('express');
 const service = require('../services/patientService');
 const Pusher = require("pusher");
 const router = express.Router();
+const config = require('config');
 
 const pusher = new Pusher({
-    appId: `${process.env.PUSHER_APP_ID}`,
-    key: `${process.env.PUSHER_API_KEY}`,
-    secret: `${process.env.PUSHER_API_SECRET}`,
-    cluster: `${process.env.PUSHER_APP_CLUSTER}`,
+    appId: config.get('pusher_app_id'),
+    key: config.get('pusher_api_key'),
+    secret: config.get('pusher_api_secret'),
+    cluster: config.get('pusher_app_cluster'),
     encrypted: true
 });
 
@@ -68,7 +69,7 @@ router.put('/:id', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const patient = await Patient.findByIdAndUpdate(req.params.id,
+    const patient = await Patient.findOneAndUpdate({ patientId: req.params.id},
         {
             name: req.body.name,
             age: req.body.age,

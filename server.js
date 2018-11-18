@@ -1,10 +1,13 @@
 require("dotenv").config();
 
+const config = require('config');
 const bodyParser = require("body-parser");
 const express = require('express');
 const winston = require('winston');
 const cors = require('cors');
 const app = express();
+
+winston.info('Environment db connection string: ', config.get('db'))
 
 app.use(cors())
 app.use(express.urlencoded({ extended: true }));

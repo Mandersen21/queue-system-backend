@@ -1,4 +1,8 @@
 {
     "name": "Queueing system",
-    "db": "mongodb://localhost/waitingtimes"
+    "db": "mongodb://localhost/waitingtimes",
+    "pusher_app_id": "630588",
+    "pusher_api_key": "05e5eaf769413204241b",
+    "pusher_api_secret": "b5b6110a85f4f1f157e0",
+    "pusher_app_cluster": "eu"
 }
