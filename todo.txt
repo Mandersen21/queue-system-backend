@@ -1,14 +1,6 @@
 The todo list for the backend:
 
-- Add needed standard packages to make the app work on a specific port.
-- Add config, so port can be changed based on environment.
 - Add logging, so errors can be fixed quicker.
-- Add routing (patients etc)
-- Add get methods for specific routing.
-- Add post methods for specific routing. (push a new registred patient in the queue)
-- Add update methods for specific routing.
-- Add delete methods for specific routing.
 - Add mock data for testing
 - Add patient model if needed
 - Find out how time can be controlled in backend.
--  
