@@ -39,13 +39,13 @@ router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const patientIds = await Patient.find({ patientId: true, triage: req.body.triage })
+    const patientIds = await Patient.find({ triage: req.body.triage })
     let numberArray = []
     patientIds.forEach(element => {
         let n = element.slice(-2);
         numberArray.push(Number(n))
     });
-    patientQueueNumber = Math.max(...numberArray)
+    patientQueueNumber = Math.max(numberArray)
 
     patientQueueNumber = parseInt(patientQueueNumber) + 1
     if (patientQueueNumber === 100) { patientQueueNumber = 1 }
