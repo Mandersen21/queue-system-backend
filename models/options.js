@@ -4,13 +4,18 @@ const mongoose = require('mongoose');
 const Option = mongoose.model('Option', new mongoose.Schema({
     acutePatients: {
         type: Number,
-        required: false
+        required: false,
+    },
+    acutePatientMessage: {
+        type: String,
+        required: false,
     }
 }));
 
 function validateOption(option) {
     const schema = {
-        acutePatients: Joi.number()
+        acutePatients: Joi.number(),
+        acutePatientMessage: Joi.string().allow(''),
     };
     return Joi.validate(option, schema);
 }

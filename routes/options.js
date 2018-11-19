@@ -29,6 +29,7 @@ router.put('/', async (req, res) => {
     const option = await Option.findOneAndUpdate({},
         {
             acutePatients: req.body.acutePatients,
+            acutePatientMessage: req.body.acutePatientMessage,
         });
 
     if (!option) {
