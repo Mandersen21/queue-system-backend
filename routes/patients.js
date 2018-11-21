@@ -40,20 +40,13 @@ router.post('/', async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     const patientIds = await Patient.find({ triage: req.body.triage })
-    let numberArray = []
-    patientIds.forEach(element => {
-        let n = element.patientId.slice(-2);
-        numberArray.push(Number(n))
-    });
-    patientQueueNumber = Math.max(numberArray)
-    patientQueueNumber = parseInt(patientQueueNumber) + 1
-    if (patientQueueNumber === 100) { patientQueueNumber = 1 }
+    let queueNumber = service.getQueueNumber(patientIds)
 
     let patient = new Patient(
         {
             name: req.body.name,
             age: req.body.age,
-            patientId: service.createPatientId(req.body.triage, patientQueueNumber, service.getPatientInitials(req.body.name)),
+            patientId: service.createPatientId(req.body.triage, queueNumber, service.getPatientInitials(req.body.name)),
             patientInitials: service.getPatientInitials(req.body.name),
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,

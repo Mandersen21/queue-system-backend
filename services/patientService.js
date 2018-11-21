@@ -29,6 +29,28 @@ module.exports = {
         }
     },
 
+    getQueueNumber(patientIds) {
+        let queueNumber = 0
+        let numberArray = []
+        
+        patientIds.forEach(element => {
+            let n = element.patientId.slice(-2);
+            numberArray.push(Number(n))
+        });
+
+        if (numberArray.length > 0) {
+            for (i = 1; i < 99; i++) {
+                if (!numberArray.includes(i)) {
+                    queueNumber = parseInt(i)
+                    break;
+                }
+            }            
+            return queueNumber
+        }
+        else return 1
+
+    },
+
     createPatientId: function(triage, number, patientInitials) {
         let triageLetter = "";
         let queueNumber = number.toString();
