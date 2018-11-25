@@ -80,7 +80,9 @@ router.put('/:id', async (req, res) => {
             fastTrack: req.body.fastTrack,
             registredTime: new Date,
             waitingTime: service.getWaitingTime('25'),
-            minutesToWait: null
+            minutesToWait: null,
+            queuePriority: req.body.queuePriority,
+            queuePosition: req.body.queuePosition
         });
 
     if (!patient) return res.status(404).send('The patient with the given ID was not found.');
