@@ -45,6 +45,15 @@ const Patient = mongoose.model('Patient', new mongoose.Schema({
         type: Number, 
         required: false 
     },
+    queuePriority: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    queuePosition: {
+        type: Number,
+        required: false,
+    }
 }));
 
 function validatePatient(patient) {
@@ -56,7 +65,9 @@ function validatePatient(patient) {
         fastTrack: Joi.boolean(),
         registredTime: Joi.string().allow(''),
         waitingTime: Joi.string().allow(''),
-        minutesToWait: Joi.number()
+        minutesToWait: Joi.number(),
+        queuePriority: Joi.boolean(),
+        queuePosition: Joi.number()
     };
     return Joi.validate(patient, schema);
 }

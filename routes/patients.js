@@ -53,7 +53,9 @@ router.post('/', async (req, res) => {
             registredTime: new Date(),
             expectedTreatmentTime: service.getExpectedTreatmentTime(),
             waitingTime: service.getWaitingTime('25'),
-            minutesToWait: null
+            minutesToWait: null,
+            queuePriority: req.body.queuePriority,
+            queuePosition: req.body.queuePosition
         });
 
     patient = await patient.save();
