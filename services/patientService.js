@@ -56,11 +56,11 @@ module.exports = {
         let queueNumber = number.toString();
 
         // Get triage letters
-        if (triage === 1) { triageLetter = "R" }
-        if (triage === 2) { triageLetter = "O" }
-        if (triage === 3) { triageLetter = "Y" }
-        if (triage === 4) { triageLetter = "G" }
-        if (triage === 5) { triageLetter = "B" }
+        if (parseInt(triage) === 1) { triageLetter = "R" }
+        if (parseInt(triage) === 2) { triageLetter = "O" }
+        if (parseInt(triage) === 3) { triageLetter = "Y" }
+        if (parseInt(triage) === 4) { triageLetter = "G" }
+        if (parseInt(triage) === 5) { triageLetter = "B" }
 
         // Check queue number
         if (parseInt(number) < 10) { queueNumber = "0" + queueNumber }
