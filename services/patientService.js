@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { Patient, validate } = require('../models/patient');
 
 module.exports = {
 
@@ -32,7 +33,7 @@ module.exports = {
     getQueueNumber(patientIds) {
         let queueNumber = 0
         let numberArray = []
-        
+
         patientIds.forEach(element => {
             let n = element.patientId.slice(-2);
             numberArray.push(Number(n))
@@ -44,14 +45,14 @@ module.exports = {
                     queueNumber = parseInt(i)
                     break;
                 }
-            }            
+            }
             return queueNumber
         }
         else return 1
 
     },
 
-    createPatientId: function(triage, number, patientInitials) {
+    createPatientId: function (triage, number, patientInitials) {
         let triageLetter = "";
         let queueNumber = number.toString();
 
@@ -62,7 +63,7 @@ module.exports = {
         if (parseInt(triage) === 5) { triageLetter = "B" }
 
         if (parseInt(number) < 10) { queueNumber = "0" + queueNumber }
-        console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created" )
+        console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created")
         return patientInitials + triageLetter + queueNumber;
     },
 
@@ -76,7 +77,44 @@ module.exports = {
 
     getWaitingTimeInMinutes: function (expectedTreatmentTime) {
         return (expectedTreatmentTime - new Date()) / 60000;
-    }, 
+    },
+
+    getQueuePosition: function (patients, triage, priority) {
+        console.log("patients length:", patients.length)
+        console.log("patient triage:", triage)
+
+        if (patients.length < 1) { return 0 }
+
+        switch (parseInt(triage)) {
+            case 1:
+                let beforeRed = patients.filter(p => p.triage < 2).length
+                if (!priority) {
+                    return patients.filter(p => p.triage < 2 || (p.queuePriority && p.queuePosition < beforeRed)).length
+                }
+            case 2:
+                let beforeOrange = patients.filter(p => p.triage < 3).length
+                if (!priority) {
+                    return patients.filter(p => p.triage < 3 || (p.queuePriority && p.queuePosition < beforeOrange)).length
+                }
+            case 3:
+                let beforeYellow = patients.filter(p => p.triage < 4).length
+                if (!priority) {
+                    return patients.filter(p => p.triage < 4 || (p.queuePriority && p.queuePosition < beforeYellow)).length
+                }
+            case 4:
+                let beforeGreen = patients.filter(p => p.triage < 5).length
+                if (!priority) {
+                    return patients.filter(p => p.triage < 5 || (p.queuePriority && p.queuePosition < beforeGreen)).length
+                }
+            case 5:
+                if (!priority) {
+                    return patients.length
+                }
+            default:
+                return 0
+        }
+    }
+
 }
 
 // Triage enum

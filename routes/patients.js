@@ -18,7 +18,7 @@ var patientQueueNumber = 0;
 // Get all patients
 router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ triage: 1, registredTime: 1 });
-    // Add waiting time
+
     patients.forEach(p => {
         if (p.expectedTreatmentTime) {
             p.minutesToWait = service.getWaitingTimeInMinutes(p.expectedTreatmentTime)
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const patient = await Patient.findOne({ patientId: req.params.id });
     if (!patient) return res.status(404).send('Patient was not found')
-    res.send(patiecsnt)
+    res.send(patient)
 });
 
 // Add new patient to the queue
@@ -41,6 +41,16 @@ router.post('/', async (req, res) => {
 
     const patientIds = await Patient.find({ triage: req.body.triage })
     let queueNumber = service.getQueueNumber(patientIds)
+
+    // Get position for specific patient
+    const patients = await Patient.find()
+    let position = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority)
+
+    const patientsToChange = await Patient.find({ queuePosition: { $gte: position } })
+    patientsToChange.forEach(function (patient) {
+        patient.queuePosition = parseInt(patient.queuePosition) + 1
+        Patient.collection.updateOne({ _id: patient._id }, patient)
+    })
 
     let patient = new Patient(
         {
@@ -55,7 +65,7 @@ router.post('/', async (req, res) => {
             waitingTime: service.getWaitingTime('25'),
             minutesToWait: null,
             queuePriority: req.body.queuePriority,
-            queuePosition: req.body.queuePosition
+            queuePosition: position
         });
 
     patient = await patient.save();
@@ -70,6 +80,13 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+    let position = req.body.queuePosition
+
+    const patientsToChange = await Patient.find({ queuePosition: { $gte: position } })
+    patientsToChange.forEach(function (patient) {
+        patient.queuePosition = parseInt(patient.queuePosition) + 1
+        Patient.collection.updateOne({ _id: patient._id }, patient)
+    })
 
     const patient = await Patient.findOneAndUpdate({ patientId: req.params.id },
         {
@@ -95,9 +112,18 @@ router.put('/:id', async (req, res) => {
 
 // Remove patient from queue
 router.delete('/:id', async (req, res) => {
+
     const patient = await Patient.findOneAndDelete({ patientId: req.params.id });
     if (!patient) return res.status(404).send('The patient with the given ID was not found.');
-    res.send(patient);
+    if (patient) {
+        let position = patient.queuePosition
+        const patientsToChange = await Patient.find({ queuePosition: { $gte: position } })
+        patientsToChange.forEach(function (patient) {
+            patient.queuePosition = parseInt(patient.queuePosition) - 1
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        })
+        res.send(patient);
+    }
 
     // Trigger event to clients
     pusher.trigger("events-channel", "new-update", {
