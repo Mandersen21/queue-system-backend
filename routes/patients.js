@@ -17,7 +17,7 @@ var patientQueueNumber = 0;
 
 // Get all patients
 router.get('/', async (req, res) => {
-    const patients = await Patient.find().sort({ queuePosition: 1 });
+    const patients = await Patient.find().sort({ queuePosition: 1, registredTime: 1 });
 
     patients.forEach(p => {
         if (p.expectedTreatmentTime) {
@@ -80,27 +80,83 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-    let position = req.body.queuePosition
 
-    const patientsToChange = await Patient.find({ queuePosition: { $gte: position } })
-    patientsToChange.forEach(function (patient) {
-        patient.queuePosition = parseInt(patient.queuePosition) + 1
-        Patient.collection.updateOne({ _id: patient._id }, patient)
-    })
+    const patientOld = await Patient.findOneAndDelete({ patientId: req.params.id });
+    const patients = await Patient.find()
 
-    const patient = await Patient.findOneAndUpdate({ patientId: req.params.id },
+    console.log("Queue priority in request:", req.body.queuePriority)
+
+    let newPosition
+    let oldPosition = patientOld.queuePosition
+    console.log("Old position:", oldPosition)
+
+    if (req.body.queuePriority && !patientOld.queuePriority) {
+        console.log("Statement 1")
+        newPosition = req.body.queuePosition
+        console.log("New position:", newPosition)
+        const patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition } })
+        patientsToChange.forEach(function (patient) {
+            patient.queuePosition = parseInt(patient.queuePosition) + 1
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        })
+    }
+
+    if (req.body.queuePriority == false && patientOld.queuePriority == true) {
+        console.log("Statement 2")
+        newPosition = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority)
+        console.log("New position:", newPosition)
+        const patientsToChange = await Patient.find({ queuePosition: { $lte: newPosition, $gte: oldPosition } })
+        patientsToChange.forEach(function (patient) {
+            patient.queuePosition = parseInt(patient.queuePosition) - 1
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        })
+    }
+
+    if (req.body.queuePriority == true && patientOld.queuePriority == true) {
+        console.log("Statement 3")
+        newPosition = req.body.queuePosition
+        console.log("New position:", newPosition)
+
+        if (newPosition > oldPosition) {
+            console.log("Patient rykker op")
+            let patientsToChange = await Patient.find({ queuePosition: { $gte: oldPosition, $lte: newPosition } })
+            patientsToChange.forEach(function (patient) {
+                if (patient.queuePosition > 0) {
+                    patient.queuePosition = parseInt(patient.queuePosition) - 1
+                    Patient.collection.updateOne({ _id: patient._id }, patient)
+                }
+            })
+        }
+
+        if (newPosition < oldPosition) {
+            console.log("Patient rykker ned")
+            let patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition, $lte: patientOld.queuePosition } })
+            patientsToChange.forEach(function (patient) {
+                patient.queuePosition = parseInt(patient.queuePosition) + 1
+                Patient.collection.updateOne({ _id: patient._id }, patient)
+            })
+        }
+    }
+
+    console.log("Position before adding:", newPosition)
+
+    let patient = new Patient(
         {
             name: req.body.name,
             age: req.body.age,
-            patientInitials: service.getPatientInitials(req.body.name),
+            patientId: patientOld.patientId,
+            patientInitials: patientOld.patientInitials,
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,
-            registredTime: new Date,
+            registredTime: patientOld.registredTime,
+            expectedTreatmentTime: service.getExpectedTreatmentTime(),
             waitingTime: service.getWaitingTime('25'),
             minutesToWait: null,
             queuePriority: req.body.queuePriority,
-            queuePosition: req.body.queuePosition
+            queuePosition: newPosition
         });
+
+    patient = await patient.save();
 
     if (!patient) return res.status(404).send('The patient with the given ID was not found.');
     res.send(patient);
