@@ -63,7 +63,7 @@ module.exports = {
         if (parseInt(triage) === 5) { triageLetter = "B" }
 
         if (parseInt(number) < 10) { queueNumber = "0" + queueNumber }
-        console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created")
+        // console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created")
         return patientInitials + triageLetter + queueNumber;
     },
 
@@ -80,9 +80,6 @@ module.exports = {
     },
 
     getQueuePosition: function (patients, triage, priority) {
-        console.log("patients length:", patients.length)
-        console.log("patient triage:", triage)
-
         if (patients.length < 1) { return 0 }
 
         switch (parseInt(triage)) {
