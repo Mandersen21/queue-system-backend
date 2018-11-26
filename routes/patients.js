@@ -226,4 +226,14 @@ router.delete('/:id', async (req, res) => {
     });
 });
 
+router.delete('/', async (req, res) => {
+    const patients = await Patient.deleteMany({});
+    if (!patients) return res.status(404).send('The patients could not get deleted, error');
+    res.send(patients);
+
+    // Trigger event to clients
+    pusher.trigger("events-channel", "new-update", {
+    });
+});
+
 module.exports = router;
