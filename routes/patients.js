@@ -113,8 +113,10 @@ router.put('/:id', async (req, res) => {
             newPosition = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority)
             const patientsToChange = await Patient.find({ queuePosition: { $lte: newPosition, $gte: oldPosition }, fastTrack: useFastTrack })
             patientsToChange.forEach(function (patient) {
-                patient.queuePosition = parseInt(patient.queuePosition) - 1
-                Patient.collection.updateOne({ _id: patient._id }, patient)
+                if (patient.queuePosition > 0) {
+                    patient.queuePosition = parseInt(patient.queuePosition) - 1
+                    Patient.collection.updateOne({ _id: patient._id }, patient)
+                }
             })
         }
 
@@ -150,8 +152,10 @@ router.put('/:id', async (req, res) => {
 
             if (patientsToChangeInFastTrack && patientsToChangeInFastTrack.length > 0) {
                 patientsToChangeInFastTrack.forEach(function (patient) {
-                    patient.queuePosition = parseInt(patient.queuePosition) - 1
-                    Patient.collection.updateOne({ _id: patient._id }, patient)
+                    if (patient.queuePosition > 0) {
+                        patient.queuePosition = parseInt(patient.queuePosition) - 1
+                        Patient.collection.updateOne({ _id: patient._id }, patient)
+                    }
                 })
             }
 
@@ -173,8 +177,10 @@ router.put('/:id', async (req, res) => {
 
             if (patientsToChangeInFastTrack && patientsToChangeInFastTrack.length > 0) {
                 patientsToChangeInFastTrack.forEach(function (patient) {
-                    patient.queuePosition = parseInt(patient.queuePosition) - 1
-                    Patient.collection.updateOne({ _id: patient._id }, patient)
+                    if (patient.queuePosition > 0) {
+                        patient.queuePosition = parseInt(patient.queuePosition) - 1
+                        Patient.collection.updateOne({ _id: patient._id }, patient)
+                    }
                 })
             }
 
