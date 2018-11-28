@@ -67,7 +67,7 @@ function validatePatient(patient) {
         waitingTime: Joi.string().allow(''),
         minutesToWait: Joi.number(),
         queuePriority: Joi.boolean(),
-        queuePosition: Joi.number()
+        queuePosition: Joi.number().required()
     };
     return Joi.validate(patient, schema);
 }
