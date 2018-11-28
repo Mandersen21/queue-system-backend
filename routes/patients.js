@@ -83,14 +83,23 @@ router.put('/:id', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    // Get old data from mongo
+    const patientOld = await Patient.findOne({ patientId: req.params.id });
+    if (!patientOld) return res.status(404).send('The patient with the given ID was not found.');
+
+    // Set fastTrack status
     const useFastTrack = req.body.fastTrack;
-    const patientOld = await Patient.findOneAndDelete({ patientId: req.params.id });
+
+    // Set queue priority status
+    const oldQueuePriorityStatus = patientOld.queuePriority
+    const newQueuePriorityStatus = req.body.queuePriority
+
     const patients = await Patient.find({ fastTrack: useFastTrack })
 
     let newPosition
     let oldPosition = patientOld.queuePosition
 
-    if (useFastTrack.toString() == patientOld.fastTrack.toString()) {
+    if (useFastTrack == patientOld.fastTrack) {
         if (req.body.queuePriority && !patientOld.queuePriority) {
             newPosition = req.body.queuePosition
             const patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: useFastTrack })
@@ -100,7 +109,7 @@ router.put('/:id', async (req, res) => {
             })
         }
 
-        if (req.body.queuePriority == false && patientOld.queuePriority == true) {
+        if (!newQueuePriorityStatus && oldQueuePriorityStatus) {
             newPosition = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority)
             const patientsToChange = await Patient.find({ queuePosition: { $lte: newPosition, $gte: oldPosition }, fastTrack: useFastTrack })
             patientsToChange.forEach(function (patient) {
@@ -109,7 +118,7 @@ router.put('/:id', async (req, res) => {
             })
         }
 
-        if (req.body.queuePriority == true && patientOld.queuePriority == true) {
+        if (newQueuePriorityStatus == oldQueuePriorityStatus) {
             newPosition = req.body.queuePosition
 
             if (newPosition > oldPosition) {
@@ -180,26 +189,23 @@ router.put('/:id', async (req, res) => {
         }
     }
 
-    let patient = new Patient(
-        {
-            name: req.body.name,
-            age: req.body.age,
-            patientId: patientOld.patientId,
-            patientInitials: patientOld.patientInitials,
-            triage: req.body.triage,
-            fastTrack: req.body.fastTrack,
-            registredTime: patientOld.registredTime,
-            expectedTreatmentTime: service.getExpectedTreatmentTime(),
-            waitingTime: service.getWaitingTime('25'),
-            minutesToWait: null,
-            queuePriority: req.body.queuePriority,
-            queuePosition: parseInt(newPosition)
-        });
+    patientOld.set({
+        name: req.body.name,
+        age: req.body.age,
+        patientId: patientOld.patientId,
+        patientInitials: patientOld.patientInitials,
+        triage: req.body.triage,
+        fastTrack: req.body.fastTrack,
+        registredTime: patientOld.registredTime,
+        expectedTreatmentTime: service.getExpectedTreatmentTime(),
+        waitingTime: service.getWaitingTime('25'),
+        minutesToWait: null,
+        queuePriority: req.body.queuePriority,
+        queuePosition: Number(newPosition)
+    })
 
-    patient = await patient.save();
-
-    if (!patient) return res.status(404).send('The patient with the given ID was not found.');
-    res.send(patient);
+    const result = await patientOld.save();
+    res.send(result);
 
     // Trigger event to clients
     pusher.trigger("events-channel", "new-update", {
