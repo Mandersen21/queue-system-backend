@@ -12,7 +12,8 @@ const Patient = mongoose.model('Patient', new mongoose.Schema({
     },
     patientId: {
         type: String,
-        required: true
+        required: false,
+        default: ""
     },
     patientInitials: { 
         type: String, 

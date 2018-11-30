@@ -56,6 +56,7 @@ module.exports = {
         let triageLetter = "";
         let queueNumber = number.toString();
 
+        if (parseInt(triage) === 0) { triageLetter = "T" }
         if (parseInt(triage) === 1) { triageLetter = "R" }
         if (parseInt(triage) === 2) { triageLetter = "O" }
         if (parseInt(triage) === 3) { triageLetter = "Y" }
@@ -63,7 +64,6 @@ module.exports = {
         if (parseInt(triage) === 5) { triageLetter = "B" }
 
         if (parseInt(number) < 10) { queueNumber = "0" + queueNumber }
-        // console.log("Patient with id: " + patientInitials + triageLetter + queueNumber.toString() + " created")
         return patientInitials + triageLetter + queueNumber;
     },
 
@@ -116,10 +116,10 @@ module.exports = {
 
 // Triage enum
 const triage = {
+    NOT_ASSIGNED: 0,
     IMMEDIATE: 1,
     VERY_URGENT: 2,
     URGENT: 3,
     STANDARD: 4,
     NON_URGENT: 5,
-    NOT_ASSIGNED: 6,
 }

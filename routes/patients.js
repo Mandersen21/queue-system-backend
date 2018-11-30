@@ -13,8 +13,6 @@ const pusher = new Pusher({
     encrypted: true
 });
 
-var patientQueueNumber = 0;
-
 // Get all patients
 router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ queuePosition: 1, registredTime: 1 });
@@ -45,14 +43,16 @@ router.post('/', async (req, res) => {
     let useFastTrack = req.body.fastTrack
 
     // Get position for specific patient
-    const patients = await Patient.find({ fastTrack: useFastTrack })
+    const patients = await Patient.find({ fastTrack: useFastTrack, triage: { $gt: 0 } })
     let position = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority, req.body.fastTrack)
 
-    const patientsToChange = await Patient.find({ queuePosition: { $gte: position }, fastTrack: useFastTrack })
-    patientsToChange.forEach(function (patient) {
-        patient.queuePosition = parseInt(patient.queuePosition) + 1
-        Patient.collection.updateOne({ _id: patient._id }, patient)
-    })
+    if (req.body.triage > 0) {
+        const patientsToChange = await Patient.find({ queuePosition: { $gte: position }, fastTrack: useFastTrack })
+        patientsToChange.forEach(function (patient) {
+            patient.queuePosition = parseInt(patient.queuePosition) + 1
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        })
+    }
 
     let patient = new Patient(
         {
@@ -90,117 +90,139 @@ router.put('/:id', async (req, res) => {
     // Set fastTrack status
     const useFastTrack = req.body.fastTrack;
 
+    // Set triage
+    const oldTriage = patientOld.triage
+    const newTriage = req.body.triage
+
     // Set queue priority status
     const oldQueuePriorityStatus = patientOld.queuePriority
     const newQueuePriorityStatus = req.body.queuePriority
 
-    const patients = await Patient.find({ fastTrack: useFastTrack })
+    // PatientId
+    let patientId
+
+    const patients = await Patient.find({ fastTrack: useFastTrack, triage: { $gt: 0 } })
 
     let newPosition
     let oldPosition = patientOld.queuePosition
 
-    if (useFastTrack == patientOld.fastTrack) {
-        if (req.body.queuePriority && !patientOld.queuePriority) {
-            newPosition = req.body.queuePosition
-            const patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: useFastTrack })
-            patientsToChange.forEach(function (patient) {
-                patient.queuePosition = parseInt(patient.queuePosition) + 1
-                Patient.collection.updateOne({ _id: patient._id }, patient)
-            })
-        }
-
-        if (!newQueuePriorityStatus && oldQueuePriorityStatus) {
-            newPosition = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority)
-            const patientsToChange = await Patient.find({ queuePosition: { $lte: newPosition, $gte: oldPosition }, fastTrack: useFastTrack })
-            patientsToChange.forEach(function (patient) {
-                if (patient.queuePosition > 0) {
-                    patient.queuePosition = parseInt(patient.queuePosition) - 1
+    if (oldTriage > 0) {
+        if (useFastTrack == patientOld.fastTrack) {
+            if (req.body.queuePriority && !patientOld.queuePriority) {
+                newPosition = req.body.queuePosition
+                const patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: useFastTrack })
+                patientsToChange.forEach(function (patient) {
+                    patient.queuePosition = parseInt(patient.queuePosition) + 1
                     Patient.collection.updateOne({ _id: patient._id }, patient)
+                })
+            }
+
+            if (!newQueuePriorityStatus && oldQueuePriorityStatus) {
+                newPosition = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority)
+                const patientsToChange = await Patient.find({ queuePosition: { $lte: newPosition, $gte: oldPosition }, fastTrack: useFastTrack })
+                patientsToChange.forEach(function (patient) {
+                    if (patient.queuePosition > 0) {
+                        patient.queuePosition = parseInt(patient.queuePosition) - 1
+                        Patient.collection.updateOne({ _id: patient._id }, patient)
+                    }
+                })
+            }
+
+            if (newQueuePriorityStatus == oldQueuePriorityStatus) {
+                newPosition = req.body.queuePosition
+
+                if (newPosition > oldPosition) {
+                    let patientsToChange = await Patient.find({ queuePosition: { $gte: oldPosition, $lte: newPosition }, fastTrack: useFastTrack })
+                    patientsToChange.forEach(function (patient) {
+                        if (patient.queuePosition > 0) {
+                            patient.queuePosition = parseInt(patient.queuePosition) - 1
+                            Patient.collection.updateOne({ _id: patient._id }, patient)
+                        }
+                    })
                 }
-            })
-        }
 
-        if (newQueuePriorityStatus == oldQueuePriorityStatus) {
-            newPosition = req.body.queuePosition
-
-            if (newPosition > oldPosition) {
-                let patientsToChange = await Patient.find({ queuePosition: { $gte: oldPosition, $lte: newPosition }, fastTrack: useFastTrack })
-                patientsToChange.forEach(function (patient) {
-                    if (patient.queuePosition > 0) {
-                        patient.queuePosition = parseInt(patient.queuePosition) - 1
+                if (newPosition < oldPosition) {
+                    let patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition, $lte: patientOld.queuePosition }, fastTrack: useFastTrack })
+                    patientsToChange.forEach(function (patient) {
+                        patient.queuePosition = parseInt(patient.queuePosition) + 1
                         Patient.collection.updateOne({ _id: patient._id }, patient)
-                    }
-                })
-            }
-
-            if (newPosition < oldPosition) {
-                let patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition, $lte: patientOld.queuePosition }, fastTrack: useFastTrack })
-                patientsToChange.forEach(function (patient) {
-                    patient.queuePosition = parseInt(patient.queuePosition) + 1
-                    Patient.collection.updateOne({ _id: patient._id }, patient)
-                })
-            }
-        }
-    }
-    else {
-        if (useFastTrack) {
-            // If useFastTrack, patients are moving to fast-track queue
-            const p = await Patient.find({ fastTrack: true })
-            newPosition = service.getQueuePosition(p, req.body.triage, req.body.queuePriority)
-
-            const patientsToChangeInFastTrack = await Patient.find({ queuePosition: { $gte: oldPosition }, fastTrack: false })
-
-            if (patientsToChangeInFastTrack && patientsToChangeInFastTrack.length > 0) {
-                patientsToChangeInFastTrack.forEach(function (patient) {
-                    if (patient.queuePosition > 0) {
-                        patient.queuePosition = parseInt(patient.queuePosition) - 1
-                        Patient.collection.updateOne({ _id: patient._id }, patient)
-                    }
-                })
-            }
-
-            const patientsToChangeInRegular = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: true })
-
-            if (patientsToChangeInRegular && patientsToChangeInRegular.length > 0) {
-                patientsToChangeInRegular.forEach(function (patient) {
-                    patient.queuePosition = parseInt(patient.queuePosition) + 1
-                    Patient.collection.updateOne({ _id: patient._id }, patient)
-                })
+                    })
+                }
             }
         }
         else {
-            // If !useFastTrack, patients are moving to regular queue
-            const p = await Patient.find({ fastTrack: false })
-            newPosition = service.getQueuePosition(p, req.body.triage, req.body.queuePriority)
+            if (useFastTrack) {
+                // If useFastTrack, patients are moving to fast-track queue
+                const p = await Patient.find({ fastTrack: true })
+                newPosition = service.getQueuePosition(p, req.body.triage, req.body.queuePriority)
 
-            const patientsToChangeInFastTrack = await Patient.find({ queuePosition: { $gte: oldPosition }, fastTrack: true })
+                const patientsToChangeInFastTrack = await Patient.find({ queuePosition: { $gte: oldPosition }, fastTrack: false })
 
-            if (patientsToChangeInFastTrack && patientsToChangeInFastTrack.length > 0) {
-                patientsToChangeInFastTrack.forEach(function (patient) {
-                    if (patient.queuePosition > 0) {
-                        patient.queuePosition = parseInt(patient.queuePosition) - 1
+                if (patientsToChangeInFastTrack && patientsToChangeInFastTrack.length > 0) {
+                    patientsToChangeInFastTrack.forEach(function (patient) {
+                        if (patient.queuePosition > 0) {
+                            patient.queuePosition = parseInt(patient.queuePosition) - 1
+                            Patient.collection.updateOne({ _id: patient._id }, patient)
+                        }
+                    })
+                }
+
+                const patientsToChangeInRegular = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: true })
+
+                if (patientsToChangeInRegular && patientsToChangeInRegular.length > 0) {
+                    patientsToChangeInRegular.forEach(function (patient) {
+                        patient.queuePosition = parseInt(patient.queuePosition) + 1
                         Patient.collection.updateOne({ _id: patient._id }, patient)
-                    }
-                })
+                    })
+                }
             }
+            else {
+                // If !useFastTrack, patients are moving to regular queue
+                const p = await Patient.find({ fastTrack: false })
+                newPosition = service.getQueuePosition(p, req.body.triage, req.body.queuePriority)
 
-            const patientsToChangeInRegular = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: false })
+                const patientsToChangeInFastTrack = await Patient.find({ queuePosition: { $gte: oldPosition }, fastTrack: true })
 
-            if (patientsToChangeInRegular && patientsToChangeInRegular.length > 0) {
-                patientsToChangeInRegular.forEach(function (patient) {
-                    patient.queuePosition = parseInt(patient.queuePosition) + 1
-                    Patient.collection.updateOne({ _id: patient._id }, patient)
-                })
+                if (patientsToChangeInFastTrack && patientsToChangeInFastTrack.length > 0) {
+                    patientsToChangeInFastTrack.forEach(function (patient) {
+                        if (patient.queuePosition > 0) {
+                            patient.queuePosition = parseInt(patient.queuePosition) - 1
+                            Patient.collection.updateOne({ _id: patient._id }, patient)
+                        }
+                    })
+                }
+
+                const patientsToChangeInRegular = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: false })
+
+                if (patientsToChangeInRegular && patientsToChangeInRegular.length > 0) {
+                    patientsToChangeInRegular.forEach(function (patient) {
+                        patient.queuePosition = parseInt(patient.queuePosition) + 1
+                        Patient.collection.updateOne({ _id: patient._id }, patient)
+                    })
+                }
             }
         }
+
+    }
+    else {
+        newPosition = service.getQueuePosition(patients, newTriage, newQueuePriorityStatus) 
+        const patientIds = await Patient.find({ triage: newTriage })
+        let queueNumber = service.getQueueNumber(patientIds)
+        patientId = service.createPatientId(newTriage, queueNumber, service.getPatientInitials(patientOld.name))
+
+        const patientsToChange = await Patient.find({ queuePosition: { $gte: newPosition }, fastTrack: useFastTrack, triage: { $gt: 0 } })
+        patientsToChange.forEach(function (patient) {
+            patient.queuePosition = parseInt(patient.queuePosition) + 1
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        })
     }
 
     patientOld.set({
         name: req.body.name,
         age: req.body.age,
-        patientId: patientOld.patientId,
+        patientId: patientId ? patientId : patientOld.patientId,
         patientInitials: patientOld.patientInitials,
-        triage: req.body.triage,
+        triage: newTriage,
         fastTrack: req.body.fastTrack,
         registredTime: patientOld.registredTime,
         expectedTreatmentTime: service.getExpectedTreatmentTime(),
