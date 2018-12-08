@@ -101,7 +101,7 @@ router.put('/:id', async (req, res) => {
     // PatientId
     let patientId
 
-    const patients = await Patient.find({ fastTrack: useFastTrack, triage: { $gt: 0 } })
+    const patients = await Patient.find({ fastTrack: useFastTrack, triage: { $gt: 0 }, patientId: { $ne: req.params.id } })
 
     let newPosition
     let oldPosition = patientOld.queuePosition
@@ -129,7 +129,13 @@ router.put('/:id', async (req, res) => {
             }
 
             if (newQueuePriorityStatus == oldQueuePriorityStatus) {
-                newPosition = req.body.queuePosition
+                
+                if (newTriage == oldTriage) {
+                    newPosition = req.body.queuePosition
+                }
+                else {
+                    newPosition = service.getQueuePosition(patients, req.body.triage, req.body.queuePriority)
+                }
 
                 if (newPosition > oldPosition) {
                     let patientsToChange = await Patient.find({ queuePosition: { $gte: oldPosition, $lte: newPosition }, fastTrack: useFastTrack })
