@@ -16,6 +16,11 @@ const Option = mongoose.model('Option', new mongoose.Schema({
         type: Boolean,
         required: false,
         default: false
+    },
+    patientInTreatment: {
+        type: Number,
+        required: false,
+        default: 0
     }
 }));
 
@@ -24,6 +29,7 @@ function validateOption(option) {
         acutePatients: Joi.number(),
         acutePatientMessage: Joi.string().allow(''),
         fastTrackOpen: Joi.boolean(),
+        patientInTreatment: Joi.number()
     };
     return Joi.validate(option, schema);
 }

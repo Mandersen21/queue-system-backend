@@ -30,7 +30,8 @@ router.put('/', async (req, res) => {
         {
             acutePatients: req.body.acutePatients,
             acutePatientMessage: req.body.acutePatientMessage,
-            fastTrackOpen: req.body.fastTrackOpen
+            fastTrackOpen: req.body.fastTrackOpen,
+            patientInTreatment: req.body.patientInTreatment
         });
 
     if (!option) {
