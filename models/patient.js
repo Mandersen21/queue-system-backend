@@ -33,11 +33,11 @@ const Patient = mongoose.model('Patient', new mongoose.Schema({
         required: false, 
         default: new Date()
     },
-    expectedWaitingTime: {
+    expectedTime: {
         type: Date,
         required: true,
     },
-    actualWaitingTime: { 
+    actualTime: { 
         type: Date, 
         required: false, 
         default: new Date() 

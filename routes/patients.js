@@ -18,10 +18,11 @@ const pusher = new Pusher({
 // Get all patients
 router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ queuePosition: 1, registredTime: 1 });
-
-    patients.forEach(p => {
-        if (p.expectedTreatmentTime) {
-            p.minutesToWait = service.getWaitingTimeInMinutes(p.expectedTreatmentTime)
+    patients.forEach(patient => {
+        if (patient.minutesToWait > 0) {
+            patient.actualTime = service.updateWaitingTime()
+            patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
+            Patient.collection.updateOne({ _id: patient._id }, patient)
         }
     })
     res.send(patients)
@@ -71,8 +72,8 @@ router.post('/', async (req, res) => {
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,
             registredTime: currentDate,
-            expectedWaitingTime: expectedWaitingTime,
-            actualWaitingTime: currentDate,
+            actualTime: currentDate,
+            expectedTime: expectedWaitingTime,
             minutesToWait: service.getWaitingTimeInMinutes(expectedWaitingTime),
             queuePriority: req.body.queuePriority,
             queuePosition: position
@@ -239,9 +240,9 @@ router.put('/:id', async (req, res) => {
         triage: newTriage,
         fastTrack: req.body.fastTrack,
         registredTime: patientOld.registredTime,
-        expectedTreatmentTime: service.getExpectedTreatmentTime(),
-        waitingTime: service.getWaitingTime('25'),
-        minutesToWait: null,
+        expectedTime: patientOld.expectedTime,
+        actualTime: service.updateWaitingTime(),
+        minutesToWait: service.getWaitingTimeInMinutes(patientOld.expectedTime),
         queuePriority: req.body.queuePriority,
         queuePosition: Number(newPosition)
     })
@@ -272,7 +273,7 @@ router.delete('/:id', async (req, res) => {
             {
                 triage: patient.triage,
                 week: service.getWeek(patient.registredTime),
-                timeOfDay: patient.registredTime.getHours(),
+                timeOfDay: patient.registredTime.hour(),
                 timeWaited: Math.round(service.getWaitingTimeInMinutes(patient.registredTime))
             });
         treatment = await treatment.save();
