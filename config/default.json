@@ -1,6 +1,7 @@
 {
     "name": "Queueing system",
     "db": "mongodb://localhost/waitingtimes",
+    "predict": "https://ventetid-predict.herokuapp.com",
     "pusher_app_id": "630588",
     "pusher_api_key": "05e5eaf769413204241b",
     "pusher_api_secret": "b5b6110a85f4f1f157e0",

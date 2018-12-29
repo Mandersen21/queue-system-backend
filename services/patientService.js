@@ -1,5 +1,6 @@
 const moment = require('moment');
 const axios = require('axios');
+const config = require('config');
 
 module.exports = {
 
@@ -7,7 +8,7 @@ module.exports = {
         return '_' + Math.random().toString(36).substr(2, 18);
     },
 
-    getPatientInitials: function (fullname) { // TODO - test this works as intended when user enters a middle name
+    getPatientInitials: function (fullname) {
         let firstnameCharacter = fullname.split(" ")[0];
         let lastnameCharacter = fullname.split(" ")[1];
         return (firstnameCharacter.charAt(0) + lastnameCharacter.charAt(0)).toUpperCase();
@@ -122,8 +123,8 @@ module.exports = {
     },
 
     getPrediction: function (triage, week, time, avgWait) {
-        const url = 'http://localhost:4000/predict'
-        return axios.get(url, {
+        const url = config.get('predict')
+        return axios.get(url + "/predict", {
             data: {
                 triage: triage.toString(),
                 week: week.toString(),
