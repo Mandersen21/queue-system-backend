@@ -273,7 +273,7 @@ router.delete('/:id', async (req, res) => {
             {
                 triage: patient.triage,
                 week: service.getWeek(patient.registredTime),
-                timeOfDay: patient.registredTime.hour(),
+                timeOfDay: patient.registredTime.getHours(),
                 timeWaited: Math.round(service.getWaitingTimeInMinutes(patient.registredTime))
             });
         treatment = await treatment.save();
