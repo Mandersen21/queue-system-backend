@@ -1,9 +1,11 @@
 const { Patient, validate } = require('../models/patient');
+const { Treatment, validateTreatment } = require('../models/treatment');
 const express = require('express');
 const service = require('../services/patientService');
 const Pusher = require("pusher");
 const router = express.Router();
 const config = require('config');
+
 
 const pusher = new Pusher({
     appId: config.get('pusher_app_id'),
@@ -54,6 +56,13 @@ router.post('/', async (req, res) => {
         })
     }
 
+    // Get average waitingtime
+    let treatmentPatients = await Treatment.find().sort([['toTreatment', 'descending']]).limit(3)
+    let avgWaitingTime = Math.round((treatmentPatients.map(p => p.timeWaited).reduce((a, b) => a + b, 0)) / 3);
+    let currentDate = new Date()
+    let waitingTimeReceived = await service.getWaitingTime(req.body.triage, service.getWeek(currentDate), currentDate.getHours(), avgWaitingTime, currentDate)
+    console.log(waitingTimeReceived)
+
     let patient = new Patient(
         {
             name: req.body.name,
@@ -62,9 +71,9 @@ router.post('/', async (req, res) => {
             patientInitials: service.getPatientInitials(req.body.name),
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,
-            registredTime: new Date(),
+            registredTime: currentDate,
             expectedTreatmentTime: service.getExpectedTreatmentTime(),
-            waitingTime: service.getWaitingTime('25'),
+            waitingTime: waitingTimeReceived,
             minutesToWait: null,
             queuePriority: req.body.queuePriority,
             queuePosition: position
@@ -129,7 +138,7 @@ router.put('/:id', async (req, res) => {
             }
 
             if (newQueuePriorityStatus == oldQueuePriorityStatus) {
-                
+
                 if (newTriage == oldTriage) {
                     newPosition = req.body.queuePosition
                 }
@@ -211,7 +220,7 @@ router.put('/:id', async (req, res) => {
 
     }
     else {
-        newPosition = service.getQueuePosition(patients, newTriage, newQueuePriorityStatus) 
+        newPosition = service.getQueuePosition(patients, newTriage, newQueuePriorityStatus)
         const patientIds = await Patient.find({ triage: newTriage })
         let queueNumber = service.getQueueNumber(patientIds)
         patientId = service.createPatientId(newTriage, queueNumber, service.getPatientInitials(patientOld.name))
@@ -258,6 +267,16 @@ router.delete('/:id', async (req, res) => {
             patient.queuePosition = parseInt(patient.queuePosition) - 1
             Patient.collection.updateOne({ _id: patient._id }, patient)
         })
+
+        // Push to treatment
+        let treatment = new Treatment(
+            {
+                triage: patient.triage,
+                week: service.getWeek(patient.registredTime),
+                timeOfDay: patient.registredTime.getHours(),
+                timeWaited: Math.round(service.getWaitingTimeInMinutes(patient.registredTime))
+            });
+        treatment = await treatment.save();
         res.send(patient);
     }
 

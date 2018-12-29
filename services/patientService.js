@@ -1,5 +1,7 @@
 const moment = require('moment');
 const { Patient, validate } = require('../models/patient');
+const { Treatment, validateTreatment } = require('../models/treatment');
+const axios = require('axios');
 
 module.exports = {
 
@@ -11,6 +13,12 @@ module.exports = {
         let firstnameCharacter = fullname.split(" ")[0];
         let lastnameCharacter = fullname.split(" ")[1];
         return (firstnameCharacter.charAt(0) + lastnameCharacter.charAt(0)).toUpperCase();
+    },
+
+    getWeek: function (currentDate) {
+        let momentDate = moment(currentDate)
+        momentDate = momentDate.locale('da')
+        return momentDate.weekday()
     },
 
     getTriage: function (triageNumber) {
@@ -71,12 +79,15 @@ module.exports = {
         return moment().add(35, 'minute').toDate()
     },
 
-    getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
-        return moment().add(time, 'minute').toDate()
+    getWaitingTime: async function (triage, week, time, avgWait, currentDate) {
+        let response = await this.getPrediction(triage, week, time, avgWait)
+        let waitingTime = Math.round(response.data)
+        let waitingDate = moment(currentDate).locale('da').add(waitingTime, 'minute')
+        return waitingDate
     },
 
-    getWaitingTimeInMinutes: function (expectedTreatmentTime) {
-        return (expectedTreatmentTime - new Date()) / 60000;
+    getWaitingTimeInMinutes: function (date) {
+        return (new Date() - date) / 60000;
     },
 
     getQueuePosition: function (patients, triage, priority) {
@@ -110,6 +121,20 @@ module.exports = {
             default:
                 return 0
         }
+    },
+
+    getPrediction: function (triage, week, time, avgWait) {
+        const url = 'http://localhost:4000/predict'
+        return axios.get(url, {
+            data: {
+                triage: triage.toString(),
+                week: week.toString(),
+                time: time.toString(),
+                avgWait: avgWait.toString()
+            }
+        })
+            .then(data => data)
+            .catch(err => console.log(err))
     }
 
 }
