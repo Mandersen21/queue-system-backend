@@ -4,8 +4,8 @@ const express = require('express');
 const service = require('../services/patientService');
 const Pusher = require("pusher");
 const router = express.Router();
+const moment = require('moment');
 const config = require('config');
-
 
 const pusher = new Pusher({
     appId: config.get('pusher_app_id'),
@@ -59,9 +59,8 @@ router.post('/', async (req, res) => {
     // Get average waitingtime
     let treatmentPatients = await Treatment.find().sort([['toTreatment', 'descending']]).limit(3)
     let avgWaitingTime = Math.round((treatmentPatients.map(p => p.timeWaited).reduce((a, b) => a + b, 0)) / 3);
-    let currentDate = new Date()
-    let waitingTimeReceived = await service.getWaitingTime(req.body.triage, service.getWeek(currentDate), currentDate.getHours(), avgWaitingTime, currentDate)
-    console.log(waitingTimeReceived)
+    let currentDate = moment()
+    let expectedWaitingTime = await service.getExpectedWaitingTime(req.body.triage, service.getWeek(currentDate), currentDate.hour(), avgWaitingTime, currentDate)
 
     let patient = new Patient(
         {
@@ -72,9 +71,9 @@ router.post('/', async (req, res) => {
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,
             registredTime: currentDate,
-            expectedTreatmentTime: service.getExpectedTreatmentTime(),
-            waitingTime: waitingTimeReceived,
-            minutesToWait: null,
+            expectedWaitingTime: expectedWaitingTime,
+            actualWaitingTime: currentDate,
+            minutesToWait: service.getWaitingTimeInMinutes(expectedWaitingTime),
             queuePriority: req.body.queuePriority,
             queuePosition: position
         });

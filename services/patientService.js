@@ -1,6 +1,4 @@
 const moment = require('moment');
-const { Patient, validate } = require('../models/patient');
-const { Treatment, validateTreatment } = require('../models/treatment');
 const axios = require('axios');
 
 module.exports = {
@@ -75,19 +73,19 @@ module.exports = {
         return patientInitials + triageLetter + queueNumber;
     },
 
-    getExpectedTreatmentTime: function () {
-        return moment().add(35, 'minute').toDate()
-    },
-
-    getWaitingTime: async function (triage, week, time, avgWait, currentDate) {
+    getExpectedWaitingTime: async function (triage, week, time, avgWait, currentDate) {
         let response = await this.getPrediction(triage, week, time, avgWait)
         let waitingTime = Math.round(response.data)
         let waitingDate = moment(currentDate).locale('da').add(waitingTime, 'minute')
         return waitingDate
     },
 
+    updateWaitingTime: function () {
+        return moment()
+    },
+
     getWaitingTimeInMinutes: function (date) {
-        return (new Date() - date) / 60000;
+        return Math.round(Math.abs((moment() - date) / 60000));
     },
 
     getQueuePosition: function (patients, triage, priority) {
