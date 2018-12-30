@@ -1,5 +1,6 @@
 const moment = require('moment');
-const { Patient, validate } = require('../models/patient');
+const axios = require('axios');
+const config = require('config');
 
 module.exports = {
 
@@ -7,10 +8,16 @@ module.exports = {
         return '_' + Math.random().toString(36).substr(2, 18);
     },
 
-    getPatientInitials: function (fullname) { // TODO - test this works as intended when user enters a middle name
+    getPatientInitials: function (fullname) {
         let firstnameCharacter = fullname.split(" ")[0];
         let lastnameCharacter = fullname.split(" ")[1];
         return (firstnameCharacter.charAt(0) + lastnameCharacter.charAt(0)).toUpperCase();
+    },
+
+    getWeek: function (currentDate) {
+        let momentDate = moment(currentDate)
+        momentDate = momentDate.locale('da')
+        return momentDate.weekday()
     },
 
     getTriage: function (triageNumber) {
@@ -67,16 +74,19 @@ module.exports = {
         return patientInitials + triageLetter + queueNumber;
     },
 
-    getExpectedTreatmentTime: function () {
-        return moment().add(35, 'minute').toDate()
+    getExpectedWaitingTime: async function (triage, week, time, avgWait, currentDate) {
+        let response = await this.getPrediction(triage, week, time, avgWait)
+        let waitingTime = Math.round(response.data)
+        let waitingDate = moment(currentDate).locale('da').add(waitingTime, 'minute')
+        return waitingDate
     },
 
-    getWaitingTime: function (time) { // TODO - add logic to retrieve estimated waiting time, note use Moment libery
-        return moment().add(time, 'minute').toDate()
+    updateWaitingTime: function () {
+        return moment()
     },
 
-    getWaitingTimeInMinutes: function (expectedTreatmentTime) {
-        return (expectedTreatmentTime - new Date()) / 60000;
+    getWaitingTimeInMinutes: function (date) {
+        return Math.round(Math.abs((moment() - date) / 60000));
     },
 
     getQueuePosition: function (patients, triage, priority) {
@@ -110,6 +120,20 @@ module.exports = {
             default:
                 return 0
         }
+    },
+
+    getPrediction: function (triage, week, time, avgWait) {
+        const url = config.get('predict')
+        return axios.get(url + "/predict", {
+            data: {
+                triage: triage.toString(),
+                week: week.toString(),
+                time: time.toString(),
+                avgWait: avgWait.toString()
+            }
+        })
+            .then(data => data)
+            .catch(err => console.log(err))
     }
 
 }

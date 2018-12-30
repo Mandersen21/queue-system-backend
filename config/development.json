@@ -1,4 +1,5 @@
 {
     "name": "Queueing system",
-    "db": "mongodb://localhost/waitingtimes"
+    "db": "mongodb://localhost/waitingtimes",
+    "predict": "http://localhost:4000"
 }

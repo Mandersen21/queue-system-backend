@@ -1,8 +1,10 @@
 const { Patient, validate } = require('../models/patient');
+const { Treatment, validateTreatment } = require('../models/treatment');
 const express = require('express');
 const service = require('../services/patientService');
 const Pusher = require("pusher");
 const router = express.Router();
+const moment = require('moment');
 const config = require('config');
 
 const pusher = new Pusher({
@@ -16,10 +18,11 @@ const pusher = new Pusher({
 // Get all patients
 router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ queuePosition: 1, registredTime: 1 });
-
-    patients.forEach(p => {
-        if (p.expectedTreatmentTime) {
-            p.minutesToWait = service.getWaitingTimeInMinutes(p.expectedTreatmentTime)
+    patients.forEach(patient => {
+        if (patient.minutesToWait > 0) {
+            patient.actualTime = service.updateWaitingTime()
+            patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
+            Patient.collection.updateOne({ _id: patient._id }, patient)
         }
     })
     res.send(patients)
@@ -54,6 +57,12 @@ router.post('/', async (req, res) => {
         })
     }
 
+    // Get average waitingtime
+    let treatmentPatients = await Treatment.find().sort([['toTreatment', 'descending']]).limit(3)
+    let avgWaitingTime = Math.round((treatmentPatients.map(p => p.timeWaited).reduce((a, b) => a + b, 0)) / 3);
+    let currentDate = moment()
+    let expectedWaitingTime = await service.getExpectedWaitingTime(req.body.triage, service.getWeek(currentDate), currentDate.hour(), avgWaitingTime, currentDate)
+
     let patient = new Patient(
         {
             name: req.body.name,
@@ -62,10 +71,10 @@ router.post('/', async (req, res) => {
             patientInitials: service.getPatientInitials(req.body.name),
             triage: req.body.triage,
             fastTrack: req.body.fastTrack,
-            registredTime: new Date(),
-            expectedTreatmentTime: service.getExpectedTreatmentTime(),
-            waitingTime: service.getWaitingTime('25'),
-            minutesToWait: null,
+            registredTime: currentDate,
+            actualTime: currentDate,
+            expectedTime: expectedWaitingTime,
+            minutesToWait: service.getWaitingTimeInMinutes(expectedWaitingTime),
             queuePriority: req.body.queuePriority,
             queuePosition: position
         });
@@ -129,7 +138,7 @@ router.put('/:id', async (req, res) => {
             }
 
             if (newQueuePriorityStatus == oldQueuePriorityStatus) {
-                
+
                 if (newTriage == oldTriage) {
                     newPosition = req.body.queuePosition
                 }
@@ -211,7 +220,7 @@ router.put('/:id', async (req, res) => {
 
     }
     else {
-        newPosition = service.getQueuePosition(patients, newTriage, newQueuePriorityStatus) 
+        newPosition = service.getQueuePosition(patients, newTriage, newQueuePriorityStatus)
         const patientIds = await Patient.find({ triage: newTriage })
         let queueNumber = service.getQueueNumber(patientIds)
         patientId = service.createPatientId(newTriage, queueNumber, service.getPatientInitials(patientOld.name))
@@ -231,9 +240,9 @@ router.put('/:id', async (req, res) => {
         triage: newTriage,
         fastTrack: req.body.fastTrack,
         registredTime: patientOld.registredTime,
-        expectedTreatmentTime: service.getExpectedTreatmentTime(),
-        waitingTime: service.getWaitingTime('25'),
-        minutesToWait: null,
+        expectedTime: patientOld.expectedTime,
+        actualTime: service.updateWaitingTime(),
+        minutesToWait: service.getWaitingTimeInMinutes(patientOld.expectedTime),
         queuePriority: req.body.queuePriority,
         queuePosition: Number(newPosition)
     })
@@ -258,6 +267,16 @@ router.delete('/:id', async (req, res) => {
             patient.queuePosition = parseInt(patient.queuePosition) - 1
             Patient.collection.updateOne({ _id: patient._id }, patient)
         })
+
+        // Push to treatment
+        let treatment = new Treatment(
+            {
+                triage: patient.triage,
+                week: service.getWeek(patient.registredTime),
+                timeOfDay: patient.registredTime.getHours(),
+                timeWaited: Math.round(service.getWaitingTimeInMinutes(patient.registredTime))
+            });
+        treatment = await treatment.save();
         res.send(patient);
     }
 
