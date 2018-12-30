@@ -17,14 +17,33 @@ const pusher = new Pusher({
 
 // Get all patients
 router.get('/', async (req, res) => {
-    const patients = await Patient.find().sort({ queuePosition: 1, registredTime: 1 });
+    const patients = await Patient.find().sort({ minutesToWait: 1, triage: 1, registredTime: 1 });
+    let increaseTime = false
+    let triagePatient = 0
+    
     patients.forEach(patient => {
         if (patient.minutesToWait > 0) {
             patient.actualTime = service.updateWaitingTime()
             patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
             Patient.collection.updateOne({ _id: patient._id }, patient)
         }
+        else {
+            increaseTime = true
+            triagePatient = patient.triage
+        }
     })
+
+    if (increaseTime) {
+        patients.forEach(patient => {
+            if (patient.triage >= triagePatient) {
+            patient.actualTime = service.updateWaitingTime()
+            patient.expectedTime = service.increaseWaitingTime(patient.expectedTime, 5)
+            patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        }
+        })
+    }
+
     res.send(patients)
 });
 

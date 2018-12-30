@@ -85,6 +85,10 @@ module.exports = {
         return moment()
     },
 
+    increaseWaitingTime: function (date, minutes) {
+        return moment(date).add(minutes, 'minutes')
+    },
+
     getWaitingTimeInMinutes: function (date) {
         return Math.round(Math.abs((moment() - date) / 60000));
     },
