@@ -46,6 +46,10 @@ const Patient = mongoose.model('Patient', new mongoose.Schema({
         type: Number, 
         required: false 
     },
+    oldMinutesToWait: {
+        type: Number,
+        required: false,
+    },
     queuePriority: {
         type: Boolean,
         required: true,

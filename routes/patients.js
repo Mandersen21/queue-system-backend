@@ -20,10 +20,11 @@ router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ minutesToWait: 1, triage: 1, registredTime: 1 });
     let increaseTime = false
     let triagePatient = 0
-    
+
     patients.forEach(patient => {
         if (patient.minutesToWait > 0) {
             patient.actualTime = service.updateWaitingTime()
+            patient.oldMinutesToWait = patient.minutesToWait + 1
             patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
             Patient.collection.updateOne({ _id: patient._id }, patient)
         }
@@ -36,11 +37,12 @@ router.get('/', async (req, res) => {
     if (increaseTime) {
         patients.forEach(patient => {
             if (patient.triage >= triagePatient) {
-            patient.actualTime = service.updateWaitingTime()
-            patient.expectedTime = service.increaseWaitingTime(patient.expectedTime, 5)
-            patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
-            Patient.collection.updateOne({ _id: patient._id }, patient)
-        }
+                patient.actualTime = service.updateWaitingTime()
+                patient.expectedTime = service.increaseWaitingTime(patient.expectedTime, 5)
+                patient.oldMinutesToWait = patient.minutesToWait + 1
+                patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
+                Patient.collection.updateOne({ _id: patient._id }, patient)
+            }
         })
     }
 
@@ -94,6 +96,7 @@ router.post('/', async (req, res) => {
             actualTime: currentDate,
             expectedTime: expectedWaitingTime,
             minutesToWait: service.getWaitingTimeInMinutes(expectedWaitingTime),
+            oldMinutesToWait: service.getWaitingTimeInMinutes(expectedWaitingTime),
             queuePriority: req.body.queuePriority,
             queuePosition: position
         });
@@ -262,6 +265,7 @@ router.put('/:id', async (req, res) => {
         expectedTime: patientOld.expectedTime,
         actualTime: service.updateWaitingTime(),
         minutesToWait: service.getWaitingTimeInMinutes(patientOld.expectedTime),
+        oldMinutesToWait: patientOld.minutesToWait,
         queuePriority: req.body.queuePriority,
         queuePosition: Number(newPosition)
     })
