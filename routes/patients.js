@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
     patients.forEach(patient => {
         if (patient.minutesToWait > 0) {
             patient.actualTime = service.updateWaitingTime()
-            patient.oldMinutesToWait = patient.minutesToWait + 1
+            patient.oldMinutesToWait = patient.minutesToWait
             patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
             Patient.collection.updateOne({ _id: patient._id }, patient)
         }
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
             if (patient.triage >= triagePatient) {
                 patient.actualTime = service.updateWaitingTime()
                 patient.expectedTime = service.increaseWaitingTime(patient.expectedTime, 5)
-                patient.oldMinutesToWait = patient.minutesToWait + 1
+                patient.oldMinutesToWait = patient.minutesToWait
                 patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
                 Patient.collection.updateOne({ _id: patient._id }, patient)
             }
