@@ -20,9 +20,7 @@ router.get('/', async (req, res) => {
     const patients = await Patient.find().sort({ minutesToWait: 1, triage: 1, registredTime: 1 });
     let increaseTime = false
     let triagePatient = 0
-
-    console.log("Queue:", req.query.update)
-
+    
     patients.forEach(patient => {
         if (patient.minutesToWait > 0) {
             let minutesToWait = patient.minutesToWait

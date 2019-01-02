@@ -39,7 +39,6 @@ router.put('/', async (req, res) => {
             patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
             if (patient.minutesToWait < 0) { patient.minutesToWait = 0 }
             if (req.query.update != "false") {
-                console.log("Updaing oldMinutes")
                 patient.oldMinutesToWait = minutesToWait
             }
             Patient.collection.updateOne({ _id: patient._id }, patient)
