@@ -39,6 +39,7 @@ router.put('/', async (req, res) => {
             patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
             if (patient.minutesToWait < 0) { patient.minutesToWait = 0 }
             if (req.query.update != "false") {
+                console.log("Updaing oldMinutes")
                 patient.oldMinutesToWait = minutesToWait
             }
             Patient.collection.updateOne({ _id: patient._id }, patient)
@@ -80,11 +81,11 @@ router.put('/', async (req, res) => {
     }
 
     // Trigger event to clients
-    pusher.trigger("events-channel", "new-option", {
+    pusher.trigger("events-channel", "new-update-from-admin", {
     });
 
     // Trigger event to clients
-    pusher.trigger("events-channel", "new-update", {
+    pusher.trigger("events-channel", "new-option", {
     });
 });
 

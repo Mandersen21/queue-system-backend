@@ -21,6 +21,8 @@ router.get('/', async (req, res) => {
     let increaseTime = false
     let triagePatient = 0
 
+    console.log("Queue:", req.query.update)
+
     patients.forEach(patient => {
         if (patient.minutesToWait > 0) {
             let minutesToWait = patient.minutesToWait
