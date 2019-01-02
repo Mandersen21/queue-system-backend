@@ -65,6 +65,7 @@ router.post('/', async (req, res) => {
     let queueNumber = service.getQueueNumber(patientIds)
 
     let useFastTrack = req.body.fastTrack
+    let predefinedWaitingTime = req.body.waitingTime
 
     // Get position for specific patient
     const patients = await Patient.find({ fastTrack: useFastTrack, triage: { $gt: 0 } })
@@ -82,7 +83,7 @@ router.post('/', async (req, res) => {
     let treatmentPatients = await Treatment.find().sort([['toTreatment', 'descending']]).limit(3)
     let avgWaitingTime = Math.round((treatmentPatients.map(p => p.timeWaited).reduce((a, b) => a + b, 0)) / 3);
     let currentDate = moment()
-    let expectedWaitingTime = await service.getExpectedWaitingTime(req.body.triage, service.getWeek(currentDate), currentDate.hour(), avgWaitingTime, currentDate)
+    let expectedWaitingTime = await service.getExpectedWaitingTime(req.body.triage, service.getWeek(currentDate), currentDate.hour(), avgWaitingTime, currentDate, predefinedWaitingTime)
 
     let patient = new Patient(
         {
@@ -117,6 +118,10 @@ router.put('/:id', async (req, res) => {
     // Get old data from mongo
     const patientOld = await Patient.findOne({ patientId: req.params.id });
     if (!patientOld) return res.status(404).send('The patient with the given ID was not found.');
+
+    console.log(req.body)
+
+    const predefinedWaitingTime = req.body.waitingTime
 
     // Set fastTrack status
     const useFastTrack = req.body.fastTrack;
@@ -254,6 +259,14 @@ router.put('/:id', async (req, res) => {
         })
     }
 
+    let expectedTime
+    if (predefinedWaitingTime > patientOld.minutesToWait) {
+        expectedTime = predefinedWaitingTime > 0 ? moment(patientOld.expectedTime).locale('da').add(Math.abs(predefinedWaitingTime - patientOld.minutesToWait), 'minute') : null
+    }
+    else {
+        expectedTime = predefinedWaitingTime > 0 ? moment(patientOld.expectedTime).locale('da').subtract(Math.abs(predefinedWaitingTime - patientOld.minutesToWait), 'minute') : null
+    }
+    
     patientOld.set({
         name: req.body.name,
         age: req.body.age,
@@ -262,9 +275,9 @@ router.put('/:id', async (req, res) => {
         triage: newTriage,
         fastTrack: req.body.fastTrack,
         registredTime: patientOld.registredTime,
-        expectedTime: patientOld.expectedTime,
+        expectedTime: expectedTime ? expectedTime : patientOld.expectedTime,
         actualTime: service.updateWaitingTime(),
-        minutesToWait: service.getWaitingTimeInMinutes(patientOld.expectedTime),
+        minutesToWait: patientOld.minutesToWait,
         oldMinutesToWait: patientOld.minutesToWait,
         queuePriority: req.body.queuePriority,
         queuePosition: Number(newPosition)

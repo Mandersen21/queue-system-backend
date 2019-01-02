@@ -74,7 +74,10 @@ module.exports = {
         return patientInitials + triageLetter + queueNumber;
     },
 
-    getExpectedWaitingTime: async function (triage, week, time, avgWait, currentDate) {
+    getExpectedWaitingTime: async function (triage, week, time, avgWait, currentDate, predefinedTime) {
+        if (predefinedTime > 0) {
+            return moment(currentDate).locale('da').add(predefinedTime, 'minute').toDate()
+        }
         let response = await this.getPrediction(triage, week, time, avgWait)
         let waitingTime = Math.round(response.data)
         let waitingDate = moment(currentDate).locale('da').add(waitingTime, 'minute')
