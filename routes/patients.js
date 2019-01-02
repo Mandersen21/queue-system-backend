@@ -23,9 +23,14 @@ router.get('/', async (req, res) => {
 
     patients.forEach(patient => {
         if (patient.minutesToWait > 0) {
+            let minutesToWait = patient.minutesToWait
+
             patient.actualTime = service.updateWaitingTime()
-            patient.oldMinutesToWait = patient.minutesToWait
             patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
+
+            if (req.query.update != "false") {
+                patient.oldMinutesToWait = minutesToWait
+            }
             Patient.collection.updateOne({ _id: patient._id }, patient)
         }
         else {
@@ -118,8 +123,6 @@ router.put('/:id', async (req, res) => {
     // Get old data from mongo
     const patientOld = await Patient.findOne({ patientId: req.params.id });
     if (!patientOld) return res.status(404).send('The patient with the given ID was not found.');
-
-    console.log(req.body)
 
     const predefinedWaitingTime = req.body.waitingTime
 
@@ -266,7 +269,7 @@ router.put('/:id', async (req, res) => {
     else {
         expectedTime = predefinedWaitingTime > 0 ? moment(patientOld.expectedTime).locale('da').subtract(Math.abs(predefinedWaitingTime - patientOld.minutesToWait), 'minute') : null
     }
-    
+
     patientOld.set({
         name: req.body.name,
         age: req.body.age,
