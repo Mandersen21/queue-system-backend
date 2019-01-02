@@ -21,6 +21,14 @@ const Option = mongoose.model('Option', new mongoose.Schema({
         type: Number,
         required: false,
         default: 0
+    },
+    allWaitingTime: {
+        type: Number,
+        required: false
+    },
+    increaseTime: {
+        type: Boolean,
+        required: false
     }
 }));
 
@@ -29,7 +37,9 @@ function validateOption(option) {
         acutePatients: Joi.number(),
         acutePatientMessage: Joi.string().allow(''),
         fastTrackOpen: Joi.boolean(),
-        patientInTreatment: Joi.number()
+        patientInTreatment: Joi.number(),
+        allWaitingTime: Joi.number(),
+        increaseTime: Joi.boolean()
     };
     return Joi.validate(option, schema);
 }

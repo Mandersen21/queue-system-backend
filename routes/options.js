@@ -1,5 +1,7 @@
 const { Option, validateOption } = require('../models/options');
+const { Patient, validate } = require('../models/patient');
 const express = require('express');
+const service = require('../services/patientService');
 const Pusher = require("pusher");
 const router = express.Router();
 const config = require('config');
@@ -26,6 +28,40 @@ router.put('/', async (req, res) => {
     const { error } = validateOption(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    if (req.body.allWaitingTime > 0 && req.body.increaseTime) {
+        const patients = await Patient.find();
+
+        patients.forEach(patient => {
+            let minutesToWait = patient.minutesToWait
+
+            patient.actualTime = service.updateWaitingTime()
+            patient.expectedTime = service.increaseWaitingTime(patient.expectedTime, parseInt(req.body.allWaitingTime))
+            patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
+            if (patient.minutesToWait < 0) { patient.minutesToWait = 0 }
+            if (req.query.update != "false") {
+                patient.oldMinutesToWait = minutesToWait
+            }
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        })
+    }
+
+    if (req.body.allWaitingTime > 0 && !req.body.increaseTime) {
+        const patients = await Patient.find();
+
+        patients.forEach(patient => {
+            let minutesToWait = patient.minutesToWait
+
+            patient.actualTime = service.updateWaitingTime()
+            patient.expectedTime = service.decreaseWaitingTime(patient.expectedTime, parseInt(req.body.allWaitingTime))
+            patient.minutesToWait = service.getWaitingTimeInMinutes(patient.expectedTime)
+            if (patient.minutesToWait < 0) { patient.minutesToWait = 0 }
+            if (req.query.update != "false") {
+                patient.oldMinutesToWait = minutesToWait
+            }
+            Patient.collection.updateOne({ _id: patient._id }, patient)
+        })
+    }
+
     const option = await Option.findOneAndUpdate({},
         {
             acutePatients: req.body.acutePatients,
@@ -42,9 +78,13 @@ router.put('/', async (req, res) => {
     else {
         res.send(option);
     }
-    
+
     // Trigger event to clients
     pusher.trigger("events-channel", "new-option", {
+    });
+
+    // Trigger event to clients
+    pusher.trigger("events-channel", "new-update", {
     });
 });
 

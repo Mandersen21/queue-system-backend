@@ -92,6 +92,10 @@ module.exports = {
         return moment(date).add(minutes, 'minutes')
     },
 
+    decreaseWaitingTime: function (date, minutes) {
+        return moment(date).subtract(minutes, 'minutes')
+    },
+
     getWaitingTimeInMinutes: function (date) {
         return Math.round(Math.abs((moment() - date) / 60000));
     },
