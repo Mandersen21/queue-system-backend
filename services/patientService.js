@@ -74,11 +74,11 @@ module.exports = {
         return patientInitials + triageLetter + queueNumber;
     },
 
-    getExpectedWaitingTime: async function (triage, week, time, avgWait, currentDate, predefinedTime) {
+    getExpectedWaitingTime: async function (age, week, time, avgWait, currentDate, predefinedTime, inFront) {
         if (predefinedTime > 0) {
             return moment(currentDate).locale('da').add(predefinedTime, 'minute').toDate()
         }
-        let response = await this.getPrediction(triage, week, time, avgWait)
+        let response = await this.getPrediction(avgWait, age, time, week, inFront)
         let waitingTime = Math.round(response.data)
         let waitingDate = moment(currentDate).locale('da').add(waitingTime, 'minute')
         return waitingDate
@@ -133,14 +133,15 @@ module.exports = {
         }
     },
 
-    getPrediction: function (triage, week, time, avgWait) {
+    getPrediction: function (avgWait, age, time, week, inFront) {
         const url = config.get('predict')
         return axios.get(url + "/predict", {
             data: {
-                triage: triage.toString(),
-                week: week.toString(),
+                avgWait: avgWait.toString(),
+                age: age.toString(),
                 time: time.toString(),
-                avgWait: avgWait.toString()
+                week: week.toString(),
+                infront: inFront.toString()
             }
         })
             .then(data => data)

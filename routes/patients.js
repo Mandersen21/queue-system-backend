@@ -88,7 +88,7 @@ router.post('/', async (req, res) => {
     let treatmentPatients = await Treatment.find().sort([['toTreatment', 'descending']]).limit(3)
     let avgWaitingTime = Math.round((treatmentPatients.map(p => p.timeWaited).reduce((a, b) => a + b, 0)) / 3);
     let currentDate = moment()
-    let expectedWaitingTime = await service.getExpectedWaitingTime(req.body.triage, service.getWeek(currentDate), currentDate.hour(), avgWaitingTime, currentDate, predefinedWaitingTime)
+    let expectedWaitingTime = await service.getExpectedWaitingTime(req.body.age, service.getWeek(currentDate), currentDate.hour(), avgWaitingTime, currentDate, predefinedWaitingTime, patients.length)
 
     let patient = new Patient(
         {
