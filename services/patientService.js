@@ -141,7 +141,7 @@ module.exports = {
                 age: age.toString(),
                 time: time.toString(),
                 week: week.toString(),
-                infront: inFront.toString()
+                inFront: inFront.toString()
             }
         })
             .then(data => data)
